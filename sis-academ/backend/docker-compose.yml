@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+    mysql-db:
+        image: mysql:8.0
+        container_name: mysql-db
+        environment:
+            MYSQL_ROOT_PASSWORD: admin
+            MYSQL_DATABASE: estudiante
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql-data:/var/lib/mysql
+            - ./mysql-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            - microservices-network
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-padmin"]
+            timeout: 20s
+            retries: 10
+            interval: 5s
+            
+    estudiante-service:
+        build:
+            context: ./estudiante-service
+            dockerfile: Dockerfile
+        container_name: estudiante-service
+        ports:
+            - "8081:8081"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/estudiante
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+
+volumes:
+    mysql-data:
+
+networks:
+    microservices-network:
+        driver: bridge
