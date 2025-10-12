@@ -9,7 +9,7 @@ import java.time.LocalDate;
 public class Estudiante {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_estudiante")
     private Long idEstudiante;
     @Column(name = "id_curso")
