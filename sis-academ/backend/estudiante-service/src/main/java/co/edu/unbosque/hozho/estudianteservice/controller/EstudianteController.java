@@ -22,7 +22,7 @@ public class EstudianteController {
     @PostMapping(path = "/create")
     public ResponseEntity<String> create(@RequestBody Estudiante estudiante){
         int status = estudianteServ.create(estudiante);
-        if (status == 1) return new ResponseEntity<String>("Ya existe un Estudiante con ese ID", HttpStatus.NOT_ACCEPTABLE);
+        if (status == 1) return new ResponseEntity<String>("No se debe proporcionar un ID al crear un estudiante", HttpStatus.NOT_ACCEPTABLE);
         else if (status == 2) return new ResponseEntity<String>("Ya existe un Estudiante con ese nombre de usuario", HttpStatus.NOT_ACCEPTABLE);
         else if (status == 3) return new ResponseEntity<String>("Ya existe un Estudiante con ese documento de identidad", HttpStatus.NOT_ACCEPTABLE);
 
@@ -50,6 +50,7 @@ public class EstudianteController {
     public ResponseEntity<String> delete(@PathVariable Long id){
         int status = estudianteServ.deleteById(id);
         if (status == 1) return new ResponseEntity<String>("No existe un Estudiante con ese ID", HttpStatus.NOT_FOUND);
+        else if (status == 2) return new ResponseEntity<String>("No se puede eliminar el Estudiante porque tiene Notas asociadas", HttpStatus.CONFLICT);
 
         return new ResponseEntity<String>("Estudiante eliminado exitosamente", HttpStatus.OK);
     }
