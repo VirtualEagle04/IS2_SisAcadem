@@ -3,6 +3,7 @@ package co.edu.unbosque.hozho.estudianteservice.service;
 import co.edu.unbosque.hozho.estudianteservice.model.Estudiante;
 import co.edu.unbosque.hozho.estudianteservice.repository.EstudianteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class EstudianteService implements CRUDOperations<Estudiante> {
 
     @Override
     public int create(Estudiante data) {
-        if (estudianteRepo.existsById(data.getIdEstudiante())) return 1; // Ya existe un Estudiante con ese ID
+        if (data.getIdEstudiante() != null) return 1; // No se debe proporcionar un ID al crear un estudiante
         else if (estudianteRepo.existsByUsuario(data.getUsuario())) return 2; // Ya existe un Estudiante con ese nombre de usuario
         else if (estudianteRepo.existsByDocIdentidad(data.getDocIdentidad())) return 3; // Ya existe un Estudiante con ese documento de identidad
 
@@ -35,11 +36,16 @@ public class EstudianteService implements CRUDOperations<Estudiante> {
     @Override
     public int deleteById(Long id) {
         Optional<Estudiante> found = estudianteRepo.findById(id);
-        if (found.isPresent()) {
+        if (found.isEmpty()) {
+            return 1; // No existe un Estudiante con ese ID
+        }
+
+        try {
             estudianteRepo.delete(found.get());
             return 0;
+        } catch (DataIntegrityViolationException e) {
+            return 2; // No se puede eliminar el Estudiante porque tiene Notas asociadas
         }
-        return 1; // No existe un Estudiante con ese ID
     }
 
     @Override
@@ -49,14 +55,14 @@ public class EstudianteService implements CRUDOperations<Estudiante> {
             Estudiante e = found.get();
             e.setIdCurso(data.getIdCurso());
             e.setIdAcudiente(data.getIdAcudiente());
-            e.setUsuario(data.getUsuario());
+            //e.setUsuario(data.getUsuario());
             e.setClave(data.getClave());
             e.setNombres(data.getNombres());
             e.setApellidos(data.getApellidos());
             e.setFechaNacimiento(data.getFechaNacimiento());
             e.setEdad(data.getEdad());
             e.setSexo(data.getSexo());
-            e.setDocIdentidad(data.getDocIdentidad());
+            //e.setDocIdentidad(data.getDocIdentidad());
             e.setCiudadNacimiento(data.getCiudadNacimiento());
             e.setTelefono(data.getTelefono());
 
