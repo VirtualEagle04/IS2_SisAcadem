@@ -66,4 +66,72 @@ Cada contenedor tiene un puerto por donde recibe/envia información.
         /api/estudiantes
         </td>
     </tr>
+    <tr>
+        <td>
+        Grado Service
+        </td>
+        <td>
+        grado-service
+        </td>
+        <td>
+        8082
+        </td>
+        <td>
+        grado
+        </td>
+        <td>
+        /api/grados
+        </td>
+    </tr>
+    <tr>
+        <td>
+        Curso Service
+        </td>
+        <td>
+        curso-service
+        </td>
+        <td>
+        8083
+        </td>
+        <td>
+        curso
+        </td>
+        <td>
+        /api/cursos
+        </td>
+    </tr>
+    <tr>
+        <td>
+        Administrativo Service
+        </td>
+        <td>
+        administrativo-service
+        </td>
+        <td>
+        8084
+        </td>
+        <td>
+        administrativo
+        </td>
+        <td>
+        /api/administrativos
+        </td>
+    </tr>
+    <tr>
+        <td>
+        Acudiente Service
+        </td>
+        <td>
+        acudiente-service
+        </td>
+        <td>
+        8085
+        </td>
+        <td>
+        acudiente
+        </td>
+        <td>
+        /api/acudientes
+        </td>
+    </tr>
 </table>
