@@ -7,6 +7,9 @@ CREATE DATABASE IF NOT EXISTS grado;
 CREATE DATABASE IF NOT EXISTS curso;
 CREATE DATABASE IF NOT EXISTS estudiante;
 CREATE DATABASE IF NOT EXISTS nota;
+CREATE DATABASE IF NOT EXISTS asistencia;
+CREATE DATABASE IF NOT EXISTS horario;
+CREATE DATABASE IF NOT EXISTS matricula;
 
 
 USE docente;
@@ -153,6 +156,8 @@ CREATE TABLE IF NOT EXISTS estudiante (
     doc_identidad BIGINT UNIQUE,
     ciudad_nacimiento VARCHAR(255),
     telefono VARCHAR(20),
+    fecha_ingreso DATE DEFAULT CURRENT_DATE,
+    estado ENUM('Activo', 'Inactivo') NOT NULL,
     FOREIGN KEY (id_curso) REFERENCES curso.curso(id_curso),
     FOREIGN KEY (id_acudiente) REFERENCES acudiente.acudiente(id_acudiente)
 );
@@ -169,13 +174,73 @@ CREATE TABLE IF NOT EXISTS nota(
     id_nota BIGINT AUTO_INCREMENT PRIMARY KEY,
     id_actividad BIGINT,
     id_estudiante BIGINT,
+    id_periodo BIGINT,
     calificacion FLOAT NOT NULL,
     observacion TEXT,
     FOREIGN KEY (id_actividad) REFERENCES actividad.actividad(id_actividad),
-    FOREIGN KEY (id_estudiante) REFERENCES estudiante.estudiante(id_estudiante)
+    FOREIGN KEY (id_estudiante) REFERENCES estudiante.estudiante(id_estudiante),
+    FOREIGN KEY (id_periodo) REFERENCES horario.periodo_academico(id_periodo)
 );
 
 INSERT INTO nota (id_actividad, id_estudiante, calificacion, observacion)
 VALUES
 (1, 1, 4.5, 'Buen desempeño'),
 (2, 2, 5.0, 'Excelente trabajo');
+
+
+USE materia;
+
+CREATE TABLE IF NOT EXISTS materia_curso(
+    id_materia_curso BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_curso BIGINT,
+    id_materia BIGINT,
+    FOREIGN KEY (id_curso) REFERENCES curso.curso(id_curso),
+    FOREIGN KEY (id_materia) REFERENCES materia.materia(id_materia)
+);
+
+
+USE asistencia;
+
+CREATE TABLE IF NOT EXISTS asistencia(
+    id_asistencia BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_estudiante BIGINT,
+    fecha DATE NOT NULL,
+    estado ENUM('Presente', 'Ausente', 'Tarde', 'Excusado') NOT NULL,
+    observacion TEXT,
+    FOREIGN KEY (id_estudiante) REFERENCES estudiante.estudiante(id_estudiante)
+);
+
+
+USE horario;
+
+CREATE TABLE IF NOT EXISTS horario_clase(
+    id_horario BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_curso BIGINT,
+    id_materia BIGINT,
+    dia_semana ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado') NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    salon VARCHAR(50),
+    FOREIGN KEY (id_curso) REFERENCES curso.curso(id_curso),
+    FOREIGN KEY (id_materia) REFERENCES materia.materia(id_materia)
+);
+
+CREATE TABLE IF NOT EXISTS periodo_academico(
+    id_periodo BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL
+);
+
+
+USE matricula;
+
+CREATE TABLE IF NOT EXISTS matricula(
+    id_matricula BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_estudiante BIGINT,
+    id_periodo BIGINT,
+    fecha_matricula DATE NOT NULL,
+    estado ENUM('Activa', 'Inactiva', 'Retirado') NOT NULL,
+    FOREIGN KEY (id_estudiante) REFERENCES estudiante.estudiante(id_estudiante),
+    FOREIGN KEY (id_periodo) REFERENCES horario.periodo_academico(id_periodo)
+);
