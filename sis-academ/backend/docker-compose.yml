@@ -35,6 +35,24 @@ services:
         networks:
             - microservices-network
         restart: on-failure
+        
+    horario-service:
+        build:
+            context: ./horario-service
+            dockerfile: Dockerfile
+        container_name: horario-service
+        ports:
+            - "8089:8089"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/horario
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
 
 volumes:
     mysql-data:
