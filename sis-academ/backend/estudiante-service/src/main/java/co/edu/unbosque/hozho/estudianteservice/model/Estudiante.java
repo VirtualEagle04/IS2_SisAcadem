@@ -29,24 +29,30 @@ public class Estudiante {
     @Column(name = "ciudad_nacimiento")
     private String ciudadNacimiento;
     private String telefono;
+    @Column(name = "fecha_ingreso")
+    private LocalDate fechaIngreso;
+    @Column(columnDefinition = "ENUM('Activo', 'Inactivo')")
+    private String estado;
 
     public Estudiante() {
     }
 
-    public Estudiante(Long idEstudiante, Long idCurso, Long idAcudiente, String usuario, String clave, String nombres, String apellidos, LocalDate fechaNacimiento, Integer edad, Character sexo, Long docIdendidad, String ciudadNacimiento, String telefono) {
-        this.idEstudiante = idEstudiante;
-        this.idCurso = idCurso;
-        this.idAcudiente = idAcudiente;
-        this.usuario = usuario;
-        this.clave = clave;
-        this.nombres = nombres;
+    public Estudiante(String apellidos, String ciudadNacimiento, String clave, Long docIdentidad, Integer edad, String estado, LocalDate fechaIngreso, LocalDate fechaNacimiento, Long idAcudiente, Long idCurso, Long idEstudiante, String nombres, Character sexo, String telefono, String usuario) {
         this.apellidos = apellidos;
-        this.fechaNacimiento = fechaNacimiento;
-        this.edad = edad;
-        this.sexo = sexo;
-        this.docIdentidad = docIdendidad;
         this.ciudadNacimiento = ciudadNacimiento;
+        this.clave = clave;
+        this.docIdentidad = docIdentidad;
+        this.edad = edad;
+        this.estado = estado;
+        this.fechaIngreso = fechaIngreso;
+        this.fechaNacimiento = fechaNacimiento;
+        this.idAcudiente = idAcudiente;
+        this.idCurso = idCurso;
+        this.idEstudiante = idEstudiante;
+        this.nombres = nombres;
+        this.sexo = sexo;
         this.telefono = telefono;
+        this.usuario = usuario;
     }
 
     public Long getIdEstudiante() {
@@ -151,5 +157,21 @@ public class Estudiante {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public void setFechaIngreso(LocalDate fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
     }
 }
