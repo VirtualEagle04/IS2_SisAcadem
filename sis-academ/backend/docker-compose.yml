@@ -54,6 +54,24 @@ services:
             - microservices-network
         restart: on-failure
 
+    materia-service:
+      build:
+        context: ./materia-service
+        dockerfile: Dockerfile
+      container_name: materia-service
+      ports:
+        - "8087:8087"
+      depends_on:
+        mysql-db:
+          condition: service_healthy
+      environment:
+        - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/materia
+        - SPRING_DATASOURCE_USERNAME=root
+        - SPRING_DATASOURCE_PASSWORD=admin
+      networks:
+        - microservices-network
+      restart: on-failure
+
 volumes:
     mysql-data:
 
