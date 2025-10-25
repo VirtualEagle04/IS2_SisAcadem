@@ -11,46 +11,47 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/actividades")
-
 public class ActividadController {
 
     @Autowired
     private ActividadService actividadService;
 
-    public ActividadController() {}
+    public ActividadController() {
+    }
 
     @PostMapping(path = "/create")
     public ResponseEntity<String> create(@RequestBody Actividad actividad) {
         int status = actividadService.create(actividad);
-        if (status == 1) return new ResponseEntity<String>("No se debe proporcionar un ID al crear actividad", HttpStatus.NOT_ACCEPTABLE);
-        else if (status == 2) return new ResponseEntity<String>("Ya existe una actividad con ese nombre", HttpStatus.NOT_ACCEPTABLE);
-        return new ResponseEntity<String>("Actividad creado exitosamente", HttpStatus.CREATED);
+        if (status == 1) return new ResponseEntity<>("No se debe proporcionar un ID al crear actividad", HttpStatus.NOT_ACCEPTABLE);
+        else if (status == 2) return new ResponseEntity<>("Ya existe una actividad con ese nombre", HttpStatus.NOT_ACCEPTABLE);
+
+        return new ResponseEntity<>("Actividad creada exitosamente", HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/getall")
     public ResponseEntity<List<Actividad>> getAll(){
         List<Actividad> actividad =  actividadService.getAll();
-        if (actividad.isEmpty()) {
-            return new ResponseEntity<List<Actividad>>(actividad, HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<List<Actividad>>(actividad, HttpStatus.OK);
+        if (actividad.isEmpty()) return new ResponseEntity<>(actividad, HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(actividad, HttpStatus.OK);
     }
 
     @PutMapping(path = "/update/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Actividad actividad){
         int status = actividadService.updateById(id, actividad);
-        if (status == 1) return new ResponseEntity<String>("No existe una Actividad con ese ID", HttpStatus.NOT_FOUND);
+        if (status == 1) return new ResponseEntity<>("No existe una actividad con ese ID", HttpStatus.NOT_FOUND);
+        else if (status == 2) return new ResponseEntity<>("Ya existe una actividad con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 
-        return new ResponseEntity<String>("Actividad actualizado exitosamente", HttpStatus.OK);
+        return new ResponseEntity<>("Actividad actualizada exitosamente", HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
         int status = actividadService.deleteById(id);
-        if (status == 1) return new ResponseEntity<String>("No existe una Actividad con ese ID", HttpStatus.NOT_FOUND);
-        else if (status == 2) return new ResponseEntity<String>("No se puede eliminar la Actividad porque tiene notas asociadas", HttpStatus.CONFLICT);
+        if (status == 1) return new ResponseEntity<>("No existe una actividad con ese ID", HttpStatus.NOT_FOUND);
+        else if (status == 2) return new ResponseEntity<>("No se puede eliminar la actividad porque tiene registros asociados", HttpStatus.CONFLICT);
 
-        return new ResponseEntity<String>("Actividad eliminada exitosamente", HttpStatus.OK);
+        return new ResponseEntity<>("Actividad eliminada exitosamente", HttpStatus.OK);
     }
 
 

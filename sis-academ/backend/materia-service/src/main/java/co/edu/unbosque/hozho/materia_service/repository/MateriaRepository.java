@@ -9,12 +9,16 @@ import java.util.Optional;
 @Repository
 public interface MateriaRepository extends JpaRepository<Materia,Long> {
 
+    // Encontrar materia por docente
     Optional<Materia> findByIdDocente(Long idDocente);
 
+    // Encontrar materia por nombre
     Optional<Materia> findByNombre(String nombre);
 
+    // Existe una materia por docente
     boolean existsByIdDocente(Long idDocente);
 
+    // Existe una materia por nombre
     boolean existsByNombre(String nombre);
 
 }

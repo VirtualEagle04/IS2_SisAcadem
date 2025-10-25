@@ -18,11 +18,11 @@ public class ActividadService implements CRUDOperations<Actividad> {
     public ActividadService() {
     }
 
-
     @Override
     public int create(Actividad data) {
-        if (data.getIdActividad() !=null) return 1; // No se debe proporcionar un ID al crear Actividad
+        if (data.getIdActividad() !=null) return 1; // No se debe proporcionar un ID al crear una actividad
         else if(actividadRepository.existsByNombre(data.getNombre())) return 2; // Ya existe una actividad con ese nombre
+
         actividadRepository.save(data);
         return 0;
     }
@@ -35,33 +35,29 @@ public class ActividadService implements CRUDOperations<Actividad> {
     @Override
     public int deleteById(Long id) {
         Optional<Actividad> found = actividadRepository.findById(id);
-        if (found.isEmpty()) {
-            return 1; // No existe una Actividad con ese ID
-        }
+        if (found.isEmpty()) return 1; // No existe una actividad con ese ID
 
         try {
             actividadRepository.delete(found.get());
             return 0;
         } catch (DataIntegrityViolationException e) {
-            return 2; // No se puede eliminar la actividad porque hay notas asociadas
+            return 2; // No se puede eliminar la actividad porque hay registros asociados
         }
     }
 
     @Override
     public int updateById(Long id, Actividad data) {
         Optional<Actividad> found = actividadRepository.findById(id);
+        if (found.isEmpty()) return 1; // No existe una actividad con ese ID
+        else if(actividadRepository.existsByNombre(data.getNombre())) return 2; // Ya existe una actividad con ese nombre
 
-        if (found.isPresent()) {
-            Actividad actividad = found.get();
+        Actividad actividad = found.get();
+        actividad.setIdMateria(data.getIdMateria());
+        actividad.setNombre(data.getNombre());
+        actividad.setDescripcion(data.getDescripcion());
+        actividad.setPorcentaje(data.getPorcentaje());
 
-            actividad.setIdMateria(data.getIdMateria());
-            actividad.setNombre(data.getNombre());
-            actividad.setDescripcion(data.getDescripcion());
-            actividad.setPorcentaje(data.getPorcentaje());
-            actividadRepository.save(actividad);
-            return 0;
-
-        }
-        return 1;
+        actividadRepository.save(actividad);
+        return 0;
     }
 }

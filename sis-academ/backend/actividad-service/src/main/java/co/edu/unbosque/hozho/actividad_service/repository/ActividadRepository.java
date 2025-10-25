@@ -10,17 +10,15 @@ import java.util.Optional;
 @Repository
 public interface ActividadRepository extends JpaRepository<Actividad,Long> {
 
+    // Encontrar actividad por materia
     Optional<Actividad> findByIdMateria(Long idMateria);
 
+    // Encontrar actividad por nombre
     Optional<Actividad> findByNombre(String nombre);
 
-    Optional<Actividad> findByPorcentaje(int porcentaje);
-
+    // Existe una actividad por materia
     boolean existsByIdMateria(Long idMateria);
 
+    // Existe una actividad por nombre
     boolean existsByNombre(String nombre);
-    
-    boolean existsByPorcentaje(int porcentaje);
-    
-    
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/periodos-academicos")
+@RequestMapping("/api/horarios/periodos-academicos")
 public class PeriodoAcademicoController {
 
     @Autowired
@@ -40,6 +40,8 @@ public class PeriodoAcademicoController {
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody PeriodoAcademico periodoAcademico) {
         int status = periodoAcademicoServ.updateById(id, periodoAcademico);
         if (status == 1) return new ResponseEntity<>("No existe un periodo academico con ese ID", HttpStatus.NOT_FOUND);
+        else if (status == 2) return new ResponseEntity<>("Ya existe un periodo academico con ese nombre", HttpStatus.NOT_ACCEPTABLE);
+        else if (status == 3) return new ResponseEntity<>("Ya existe un periodo academico con esa fecha de inicio", HttpStatus.NOT_ACCEPTABLE);
 
         return new ResponseEntity<>("Periodo Academico actualizado exitosamente", HttpStatus.OK);
     }

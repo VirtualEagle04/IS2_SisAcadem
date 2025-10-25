@@ -26,20 +26,19 @@ CREATE TABLE IF NOT EXISTS rol(
 	curso BOOLEAN DEFAULT FALSE,
 	materia BOOLEAN DEFAULT FALSE,
 	actividad BOOLEAN DEFAULT FALSE,
-	estudiante BOOLEAN DEFAULT FALSE,
 	horario BOOLEAN DEFAULT FALSE,
 	nota BOOLEAN DEFAULT FALSE,
 	asistencia BOOLEAN DEFAULT FALSE,
 	matricula BOOLEAN DEFAULT FALSE
 );
 
-INSERT INTO rol (nombre, solo_lectura, rol, usuario, grado, curso, materia, actividad, estudiante, horario, nota, asistencia, matricula)
+INSERT INTO rol (nombre, solo_lectura, rol, usuario, grado, curso, materia, actividad, horario, nota, asistencia, matricula)
 VALUES
-('Administrador', FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
-('Coordinador', FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
-('Docente', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, FALSE),
-('Acudiente', TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-('Estudiante', TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE);
+('Administrador', FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
+('Coordinador', FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
+('Docente', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE),
+('Acudiente', TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+('Estudiante', TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE);
 
 
 USE usuario;

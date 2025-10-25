@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name= "actividad")
-
 public class Actividad {
 
     @Id
@@ -15,16 +14,25 @@ public class Actividad {
     private Long idMateria;
     private String nombre;
     private String descripcion;
-    private int porcentaje;
+    private Integer porcentaje;
 
-    public Actividad() {}
+    public Actividad() {
+    }
 
-    public Actividad(Long idActividad, Long idMateria, String nombre, String descripcion, int porcentaje) {
+    public Actividad(String descripcion, Long idActividad, Long idMateria, String nombre, Integer porcentaje) {
+        this.descripcion = descripcion;
         this.idActividad = idActividad;
         this.idMateria = idMateria;
         this.nombre = nombre;
-        this.descripcion = descripcion;
         this.porcentaje = porcentaje;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public Long getIdActividad() {
@@ -51,19 +59,11 @@ public class Actividad {
         this.nombre = nombre;
     }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public int getPorcentaje() {
+    public Integer getPorcentaje() {
         return porcentaje;
     }
 
-    public void setPorcentaje(int porcentaje) {
+    public void setPorcentaje(Integer porcentaje) {
         this.porcentaje = porcentaje;
     }
 }

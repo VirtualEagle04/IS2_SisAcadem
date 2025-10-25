@@ -20,8 +20,9 @@ public class MateriaService implements CRUDOperations<Materia> {
 
     @Override
     public int create(Materia data) {
-        if (data.getIdMateria() !=null) return 1; // No se debe proporcionar un ID al crear Materia
+        if (data.getIdMateria() !=null) return 1; // No se debe proporcionar un ID al crear materia
         else if(materiaRepository.existsByNombre(data.getNombre())) return 2; // Ya existe una materia con ese nombre
+
         materiaRepository.save(data);
         return 0;
     }
@@ -32,41 +33,30 @@ public class MateriaService implements CRUDOperations<Materia> {
     }
 
     @Override
-    public int deleteById(Long id) {
-
+    public int updateById(Long id, Materia data) {
         Optional<Materia> found = materiaRepository.findById(id);
-        if (found.isEmpty()) {
-            return 1; // No existe una materia con ese ID
-        }
+        if (found.isEmpty()) return 1; // No existe una materia con ese ID
+        else if(materiaRepository.existsByNombre(data.getNombre())) return 2; // Ya existe una materia con ese nombre
+
+        Materia materia = found.get();
+        materia.setNombre(data.getNombre());
+        materia.setIdDocente(data.getIdDocente());
+        materia.setDescripcion(data.getDescripcion());
+
+        materiaRepository.save(materia);
+        return 0;
+    }
+
+    @Override
+    public int deleteById(Long id) {
+        Optional<Materia> found = materiaRepository.findById(id);
+        if (found.isEmpty()) return 1; // No existe una materia con ese ID
 
         try {
             materiaRepository.delete(found.get());
             return 0;
         } catch (DataIntegrityViolationException e) {
-            return 2; // No se puede eliminar la materia porque tiene Notas asociadas
+            return 2; // No se puede eliminar la materia porque tiene registros asociados
         }
-
     }
-
-    @Override
-    public int updateById(Long id, Materia data) {
-        Optional<Materia> found = materiaRepository.findById(id);
-        if (found.isPresent()) {
-            Materia materia = found.get();
-            materia.setNombre(data.getNombre());
-            materia.setIdDocente(data.getIdDocente());
-            materia.setDescripcion(data.getDescripcion());
-            materiaRepository.save(materia);
-
-
-            return 0;
-
-        }
-
-        return 1;
-    }
-
-
-
-
 }

@@ -8,7 +8,7 @@ public interface CRUDOperations<T> {
 
     public List<T> getAll();
 
-    public int deleteById(Long id);
-
     public int updateById(Long id, T data);
+
+    public int deleteById(Long id);
 }

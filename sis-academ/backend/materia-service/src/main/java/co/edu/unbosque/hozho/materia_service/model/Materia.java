@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name= "materia")
-
-
 public class Materia {
 
     @Id
