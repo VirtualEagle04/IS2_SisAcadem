@@ -18,6 +18,27 @@ services:
             interval: 5s
             start_period: 30s
             
+    api-gateway:
+        build:
+            context: ./api-gateway
+            dockerfile: Dockerfile
+        container_name: api-gateway
+        ports:
+            - "8080:8080"
+        depends_on:
+            - rol-service
+            - usuario-service
+            - grado-service
+            # - curso-service
+            - materia-service
+            - actividad-service
+            - horario-service
+            # - nota-service
+            - asistencia-service
+            - matricula-service
+        networks:
+            - microservices-network
+            
     rol-service:
         build:
             context: ./rol-service
@@ -126,23 +147,23 @@ services:
             - microservices-network
         restart: on-failure
         
-    # nota-service:
-    #     build:
-    #         context: ./nota-service
-    #         dockerfile: Dockerfile
-    #     container_name: nota-service
-    #     ports:
-    #         - "8088:8088"
-    #     depends_on:
-    #         mysql-db:
-    #             condition: service_healthy
-    #     environment:
-    #         - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/nota
-    #         - SPRING_DATASOURCE_USERNAME=root
-    #         - SPRING_DATASOURCE_PASSWORD=admin
-    #     networks:
-    #         - microservices-network
-    #     restart: on-failure
+    nota-service:
+        build:
+            context: ./nota-service
+            dockerfile: Dockerfile
+        container_name: nota-service
+        ports:
+            - "8088:8088"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/nota
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
     
     asistencia-service:
         build:
