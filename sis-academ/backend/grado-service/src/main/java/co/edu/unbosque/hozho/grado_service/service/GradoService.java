@@ -41,14 +41,14 @@ public class GradoService implements CRUDOperations<Grado> {
 
         Optional<Grado> found = gradoRepository.findById(id);
         if (found.isEmpty()) {
-            return 1; // No existe un Estudiante con ese ID
+            return 1; // No existe un Grado con ese ID
         }
 
         try {
             gradoRepository.delete(found.get());
             return 0;
         } catch (DataIntegrityViolationException e) {
-            return 2; // No se puede eliminar el Estudiante porque tiene Notas asociadas
+            return 2; // No se puede eliminar el Grado porque tiene Notas asociadas
         }
 
     }
