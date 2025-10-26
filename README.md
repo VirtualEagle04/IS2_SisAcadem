@@ -7,8 +7,22 @@ Repositorio para el Sistema de Gestión Académica para el colegio 'Camino al Sa
 1. En la terminal ubicarse en el directorio `/backend`, tipo así:
    - `cd C:\Users\<su-nombre-usuario>\OneDrive\Documents\GitHub\IS2_SisAcadem\sis-academ\backend`
    - La dirección no necesariamente tiene que ser esa.
-2. Ejecutar el comando de Docker Compose para construir los contenedores. Puede tardarse un poco.
+   
+2. Ejecutar el comando de Docker compose para limpiar previas builds.
+    - `docker-compose down -v`
+    
+3. Ejecutar el comando de Docker Compose para construir los contenedores. Puede tardarse un poco.
    - `docker-compose up --build`
+   - Esperar a que todos los contenedores estén corriendo.
+   
+4. Ahora se pueden probar los REST API endpoints de los microservicios por medio del API Gateway, así:
+    - `http://localhost:8080/<API Endpoint>`
+    - Por ejemplo: 
+        - `http://localhost:8080/api/roles/getall`
+        - `http://localhost:8080/api/horarios/periodos-academicos/getall`
+        - `http://localhost:8080/api/usuarios/usuarios/getall`
+        - `http://localhost:8080/api/asistencias/getall`
+        - etc...
 
 ## ¿Cómo acceder a cada servicio/contenedor?
 
@@ -20,6 +34,9 @@ Cada contenedor tiene un puerto por donde recibe/envia información.
     </tr>
     <tr>
         <td>Servidor MySQL</td><td>mysql-db</td><td>3306</td><td>-</td><td>-</td>
+    </tr>
+    <tr>
+        <td>API Gateway</td><td>api-gateway</td><td>8080</td><td>-</td><td>-</td>
     </tr>
     <tr>
         <td>Microservicio Rol</td><td>rol-service</td><td>8081</td><td>rol</td><td>/api/roles</td>

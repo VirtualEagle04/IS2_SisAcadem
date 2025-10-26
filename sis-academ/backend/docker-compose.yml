@@ -1,12 +1,9 @@
-version: '3.8'
-
 services:
     mysql-db:
         image: mysql:8.0
         container_name: mysql-db
         environment:
             MYSQL_ROOT_PASSWORD: admin
-            MYSQL_DATABASE: estudiante
         ports:
             - "3306:3306"
         volumes:
@@ -17,25 +14,210 @@ services:
         healthcheck:
             test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-padmin"]
             timeout: 20s
-            retries: 10
+            retries: 15
             interval: 5s
+            start_period: 30s
             
-    estudiante-service:
+    api-gateway:
         build:
-            context: ./estudiante-service
+            context: ./api-gateway
             dockerfile: Dockerfile
-        container_name: estudiante-service
+        container_name: api-gateway
+        ports:
+            - "8080:8080"
+        depends_on:
+            - rol-service
+            - usuario-service
+            - grado-service
+            # - curso-service
+            - materia-service
+            - actividad-service
+            - horario-service
+            # - nota-service
+            - asistencia-service
+            - matricula-service
+        networks:
+            - microservices-network
+            
+    rol-service:
+        build:
+            context: ./rol-service
+            dockerfile: Dockerfile
+        container_name: rol-service
         ports:
             - "8081:8081"
         depends_on:
             mysql-db:
                 condition: service_healthy
         environment:
-            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/estudiante
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/rol
             - SPRING_DATASOURCE_USERNAME=root
             - SPRING_DATASOURCE_PASSWORD=admin
         networks:
             - microservices-network
+        restart: on-failure
+        
+    usuario-service:
+        build:
+            context: ./usuario-service
+            dockerfile: Dockerfile
+        container_name: usuario-service
+        ports:
+            - "8082:8082"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/usuario
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
+        
+    grado-service:
+        build:
+            context: ./grado-service
+            dockerfile: Dockerfile
+        container_name: grado-service
+        ports:
+            - "8083:8083"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/grado
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
+
+    curso-service:
+        build:
+            context: ./curso-service
+            dockerfile: Dockerfile
+        container_name: curso-service
+        ports:
+            - "8084:8084"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/curso
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
+        
+    materia-service:
+        build:
+            context: ./materia-service
+            dockerfile: Dockerfile
+        container_name: materia-service
+        ports:
+            - "8085:8085"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/materia
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
+
+    actividad-service:
+        build:
+            context: ./actividad-service
+            dockerfile: Dockerfile
+        container_name: actividad-service
+        ports:
+            - "8086:8086"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/actividad
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
+
+    horario-service:
+        build:
+            context: ./horario-service
+            dockerfile: Dockerfile
+        container_name: horario-service
+        ports:
+            - "8087:8087"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/horario
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
+        
+    nota-service:
+        build:
+            context: ./nota-service
+            dockerfile: Dockerfile
+        container_name: nota-service
+        ports:
+            - "8088:8088"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/nota
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
+    
+    asistencia-service:
+        build:
+            context: ./asistencia-service
+            dockerfile: Dockerfile
+        container_name: asistencia-service
+        ports:
+            - "8089:8089"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/asistencia
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
+        
+    matricula-service:
+        build:
+            context: ./matricula-service
+            dockerfile: Dockerfile
+        container_name: matricula-service
+        ports:
+            - "8090:8090"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/matricula
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
 
 volumes:
     mysql-data:
