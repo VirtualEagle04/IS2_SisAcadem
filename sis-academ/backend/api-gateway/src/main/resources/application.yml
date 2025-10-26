@@ -24,10 +24,10 @@ spring:
               predicates:
                 - Path=/api/grados/**
                 
-            # - id: curso-service
-            #   uri: http://curso-service:8084
-            #   predicates:
-            #     - Path=/api/cursos/**
+            - id: curso-service
+              uri: http://curso-service:8084
+              predicates:
+                - Path=/api/cursos/**
                 
             - id: materia-service
               uri: http://materia-service:8085
