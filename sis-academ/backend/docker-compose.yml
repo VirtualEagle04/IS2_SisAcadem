@@ -71,6 +71,24 @@ services:
         networks:
             - microservices-network
         restart: on-failure
+
+    curso-service:
+        build:
+            context: ./curso-service
+            dockerfile: Dockerfile
+        container_name: curso-service
+        ports:
+            - "8084:8084"
+        depends_on:
+            mysql-db:
+                condition: service_healthy
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/curso
+            - SPRING_DATASOURCE_USERNAME=root
+            - SPRING_DATASOURCE_PASSWORD=admin
+        networks:
+            - microservices-network
+        restart: on-failure
         
     materia-service:
         build:
