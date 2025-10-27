@@ -1,0 +1,29 @@
+<template>
+  <v-app>
+    <v-navigation-drawer app expand-on-hover rail>
+      <v-list>
+        <v-list-item prepend-icon="mdi-account-cog" title="Roles" value="rol" @click="selected = 'rol'"></v-list-item>
+        <v-list-item prepend-icon="mdi-account-school" title="Usuarios" value="usuario" @click="selected = 'usuario'"></v-list-item>
+        <v-list-item prepend-icon="mdi-chevron-triple-up" title="Grados" value="grado" @click="selected = 'grado'"></v-list-item>
+        <v-list-item prepend-icon="mdi-account-group" title="Cursos" value="curso" @click="selected = 'curso'"></v-list-item>
+        <v-list-item prepend-icon="mdi-book-multiple" title="Materias" value="materia" @click="selected = 'materia'"></v-list-item>
+        <v-list-item prepend-icon="mdi-format-list-checkbox" title="Actividades" value="actividad" @click="selected = 'actividad'"></v-list-item>
+        <v-list-item prepend-icon="mdi-calendar-month" title="Horarios" value="horario" @click="selected = 'horario'"></v-list-item>
+        <v-list-item prepend-icon="mdi-numeric-5-box-multiple" title="Notas" value="nota" @click="selected = 'nota'"></v-list-item>
+        <v-list-item prepend-icon="mdi-calendar-clock" title="Asistencias" value="asistencia" @click="selected = 'asistencia'"></v-list-item>
+        <v-list-item prepend-icon="mdi-file-sign" title="Matriculas" value="matricula" @click="selected = 'matricula'"></v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+    
+    <v-main class="ml-4 mr-4 mt-4 mb-4 rounded-lg">
+      <Roles v-if="selected == 'rol'"></Roles>
+    </v-main>
+  </v-app>
+</template>
+
+<script setup>
+  import { ref } from 'vue'
+  import Roles from './components/Roles.vue';
+  
+  const selected = ref('rol');
+</script>
