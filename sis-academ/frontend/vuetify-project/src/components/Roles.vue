@@ -21,7 +21,7 @@
           class="me-2"
           prepend-icon="mdi-delete"
           color="red"
-          @click="removeSelected"
+          @click="handleConfirm"
           :disabled="selected.length === 0"
         >
           Eliminar Roles
@@ -129,73 +129,51 @@
           color="red"
           icon="mdi-delete"
           size="small"
-          @click="remove(item.idRol)"
+          @click="handleConfirm(item.idRol)"
         ></v-icon>
       </div>
     </template>
   </v-data-table>
 
   <v-dialog v-model="dialog" max-width="500">
-    <v-card :title="`${editing ? 'Editar' : 'Agregar'} un Rol`">
-      <template v-slot:text>
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
-              v-model="record.nombre"
-              label="Nombre del Rol"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="record.soloLectura" label="Solo Lectura"></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="record.rol" label="Roles"></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="record.usuario" label="Usuarios"></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="record.grado" label="Grados"></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="record.curso" label="Cursos"></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="record.materia" label="Materias"></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox
-              v-model="record.actividad"
-              label="Actividades"
-            ></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="record.horario" label="Horarios"></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox v-model="record.nota" label="Notas"></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox
-              v-model="record.asistencia"
-              label="Asistencia"
-            ></v-checkbox>
-          </v-col>
-          <v-col cols="12">
-            <v-checkbox
-              v-model="record.matricula"
-              label="Matricula"
-            ></v-checkbox>
-          </v-col>
-        </v-row>
-      </template>
-
-      <v-divider></v-divider>
-
+    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} un Rol`">
+      
+      <v-form @submit.prevent="handleSubmit">
+        <v-text-field
+          v-model="record.nombre"
+          label="Nombre del Rol"
+          :rules="[required]"
+        ></v-text-field>
+        <v-switch color="light-green" v-model="record.soloLectura" label="Read-Only"></v-switch>
+        <v-switch color="light-green" v-model="record.rol" label="Roles"></v-switch>
+        <v-switch color="light-green" v-model="record.usuario" label="Usuarios"></v-switch>
+        <v-switch color="light-green" v-model="record.grado" label="Grados"></v-switch>
+        <v-switch color="light-green" v-model="record.curso" label="Cursos"></v-switch>
+        <v-switch color="light-green" v-model="record.materia" label="Materias"></v-switch>
+        <v-switch color="light-green" v-model="record.actividad" label="Actividades"></v-switch>
+        <v-switch color="light-green" v-model="record.horario" label="Horarios"></v-switch>
+        <v-switch color="light-green" v-model="record.nota" label="Notas"></v-switch>
+        <v-switch color="light-green" v-model="record.asistencia" label="Asistencia"></v-switch>
+        <v-switch color="light-green" v-model="record.matricula" label="Matricula"></v-switch>
+        
+        <v-btn class="mt-2" @click="dialog = false" block>Cancelar</v-btn>
+        <v-btn class="mt-2" type="submit" block color="green">Aceptar</v-btn>
+      </v-form>
+      
+    </v-card>
+  </v-dialog>
+  
+  <v-dialog v-model="confirmDialog.enabled" max-width="500">
+    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'el Rol' : 'todos los Roles'}?`" 
+      text="¿Confirma que quiere eliminar el/los registro(s)?"
+    >
+    <template v-slot:prepend>
+      <v-icon color="warning" icon="mdi-alert"></v-icon>
+    </template>
       <v-card-actions class="bg-surface-light">
-        <v-btn text="Cancelar" variant="plain" @click="dialog = false"></v-btn>
+        <v-btn text="Cancelar" variant="plain" @click="confirmDialog.enabled = false; selected = [];"></v-btn>
         <v-spacer></v-spacer>
-        <v-btn text="Guardar" @click="save"></v-btn>
+        <v-btn text="Confirmar" @click="`${selected.length === 0 ? remove(confirmDialog.id) : removeSelected()}`"></v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -216,7 +194,7 @@ const selected = ref([]);
 const headers = [
   { title: "ID", key: "idRol" },
   { title: "Nombre", key: "nombre" },
-  { title: "Solo Lectura", key: "soloLectura" },
+  { title: "Read-Only", key: "soloLectura" },
   { title: "Rol", key: "rol" },
   { title: "Usuario", key: "usuario" },
   { title: "Grado", key: "grado" },
@@ -255,9 +233,18 @@ function showSnackbar(msg, color = "success") {
   snackbar.value = true;
 }
 
+const valid = ref(true);
 const record = ref(FORM_DATA);
 const dialog = shallowRef(false);
 const editing = shallowRef(false);
+const confirmDialog = ref({
+  enabled: false,
+  id: null
+});
+
+function required(value) {
+  return value ? true : 'Campo requerido.';
+}
 
 function add() {
   editing.value = false;
@@ -267,13 +254,11 @@ function add() {
 
 function edit(item) {
   editing.value = true;
-  record.value = {...item};
+  record.value = { ...item };
   dialog.value = true;
 }
 
 async function remove(id) {
-  if (!confirm("¿Está seguro de eliminar el Rol?")) return;
-
   await axios
     .delete(`${API_URL}/delete/${id}`)
     .then((res) => {
@@ -283,11 +268,12 @@ async function remove(id) {
       showSnackbar(error.response.data, "error");
     });
   fetch();
+  confirmDialog.value.enabled = false;
+  confirmDialog.value.id = null;
 }
 
 async function removeSelected() {
   if (selected.length === 0) return;
-  if (!confirm("¿Está seguro de eliminar los Roles seleccionados?")) return;
 
   try {
     await Promise.all(
@@ -300,7 +286,9 @@ async function removeSelected() {
   } catch (error) {
     showSnackbar("Error al eliminar los roles", "error");
   }
-	fetch();
+  fetch();
+  confirmDialog.value.enabled = false;
+  confirmDialog.value.id = null;
 }
 
 async function save() {
@@ -309,6 +297,7 @@ async function save() {
       .put(`${API_URL}/update/${record.value.idRol}`, record.value)
       .then((res) => {
         showSnackbar(res.data);
+        dialog.value = false;
       })
       .catch((error) => {
         showSnackbar(error.response.data, "error");
@@ -318,14 +307,31 @@ async function save() {
       .post(`${API_URL}/create`, record.value)
       .then((res) => {
         showSnackbar(res.data);
+        dialog.value = false;
       })
       .catch((error) => {
         showSnackbar(error.response.data, "error");
       });
   }
-	fetch();
-	editing.value = false;
-	dialog.value = false;
+  fetch();
+}
+
+function handleConfirm(id) {
+  confirmDialog.value.enabled = true;
+  confirmDialog.value.id = id;
+}
+
+function handleSubmit(e) {
+  valid.value = true;
+  if (e.target[0].value === "") valid.value = false;
+  
+  if (valid.value) {
+    save();
+  } else {
+    showSnackbar("Campos incompletos", "error");
+  }
+  
+  valid.value = true;
 }
 
 const fetch = async () => {
