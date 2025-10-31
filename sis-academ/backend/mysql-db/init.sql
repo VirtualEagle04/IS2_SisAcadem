@@ -111,43 +111,43 @@ CREATE TABLE IF NOT EXISTS curso(
 
 INSERT INTO curso (id_grado, nombre)
 VALUES
-(1, 'A'),
-(1, 'B'),
-(1, 'C'),
+(1, '1A'),
+(1, '1B'),
+(1, '1C'),
 
-(2, 'A'),
-(2, 'B'),
-(2, 'C'),
+(2, '2A'),
+(2, '2B'),
+(2, '2C'),
 
-(3, 'A'),
-(3, 'B'),
-(3, 'C'),
+(3, '3A'),
+(3, '3B'),
+(3, '3C'),
 
-(4, 'A'),
-(4, 'B'),
-(4, 'C'),
+(4, '4A'),
+(4, '4B'),
+(4, '4C'),
 
-(5, 'A'),
-(5, 'B'),
-(5, 'C'),
+(5, '5A'),
+(5, '5B'),
+(5, '5C'),
 
-(6, 'A'),
-(6, 'B'),
+(6, '6A'),
+(6, '6B'),
 
-(7, 'A'),
-(7, 'B'),
+(7, '7A'),
+(7, '7B'),
 
-(8, 'A'),
-(8, 'B'),
+(8, '8A'),
+(8, '8B'),
 
-(9, 'A'),
-(9, 'B'),
+(9, '9A'),
+(9, '9B'),
 
-(10, 'A'),
-(10, 'B'),
+(10, '10A'),
+(10, '10B'),
 
-(11, 'A'),
-(11, 'B');
+(11, '11A'),
+(11, '11B');
 
 
 
@@ -161,6 +161,10 @@ CREATE TABLE IF NOT EXISTS estudiante_detalle(
     FOREIGN KEY (id_curso) REFERENCES curso.curso(id_curso),
     FOREIGN KEY (id_acudiente) REFERENCES usuario.usuario(id_usuario)
 );
+INSERT INTO estudiante_detalle (id_usuario, id_curso, id_acudiente)
+VALUES
+(6, 1, 4),
+(7, 2, 5);
 
 
 

@@ -17,6 +17,11 @@
     
     <v-main class="ml-4 mr-4 mt-4 mb-4 rounded-lg">
       <Roles v-if="selected == 'rol'"></Roles>
+      <Usuarios v-if="selected == 'usuario'"></Usuarios>
+      <Grados v-if="selected == 'grado'"></Grados>
+      <Cursos v-if="selected == 'curso'"></Cursos>
+      <Materias v-if="selected == 'materia'"></Materias>
+      <Actividades v-if="selected == 'actividad'"></Actividades>
     </v-main>
   </v-app>
 </template>
@@ -24,6 +29,11 @@
 <script setup>
   import { ref } from 'vue'
   import Roles from './components/Roles.vue';
+  import Usuarios from './components/Usuarios.vue';
+  import Grados from './components/Grados.vue';
+  import Cursos from './components/Cursos.vue';
+  import Materias from './components/Materias.vue';
+  import Actividades from './components/Actividades.vue';
   
-  const selected = ref('rol');
+  const selected = ref('actividad');
 </script>
