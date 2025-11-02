@@ -12,8 +12,8 @@
     <template v-slot:top>
       <v-toolbar flat class="rounded">
         <v-toolbar-title>
-          <v-icon start>mdi-format-list-checkbox</v-icon>
-          Gestión de Actividades
+          <v-icon start>mdi-google-classroom</v-icon>
+          Gestión de Horarios
         </v-toolbar-title>
         <v-text-field
           v-model="search"
@@ -24,7 +24,7 @@
           single-line
         ></v-text-field>
         <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
-          Agregar una Actividad
+          Agregar un Horario
         </v-btn>
         <v-btn
           class="me-2"
@@ -33,7 +33,7 @@
           @click="handleConfirm"
           :disabled="selected.length === 0"
         >
-          Eliminar Actividades
+          Eliminar Horarios
         </v-btn>
       </v-toolbar>
     </template>
@@ -51,17 +51,24 @@
           color="red"
           icon="mdi-delete"
           size="small"
-          @click="handleConfirm(item.idActividad)"
+          @click="handleConfirm(item.idHorario)"
         ></v-icon>
       </div>
     </template>
   </v-data-table>
 
   <v-dialog v-model="dialog" max-width="500">
-    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} una Actividad`">
+    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} un Curso`">
       
       <v-form @submit.prevent="handleSubmit">
         
+        <v-select
+          v-model="record.idGrado"
+          label="Grado"
+          :items="grados"
+          item-title="nombre"
+          item-value="idGrado"
+        ></v-select>
         <v-select
           v-model="record.idMateria"
           label="Materia"
@@ -69,24 +76,30 @@
           item-title="nombre"
           item-value="idMateria"
         ></v-select>
+        <v-select
+          v-model="record.diaSemana"
+          label="Día de la Semana"
+          :items="dias"
+          item-title="value"
+          item-value="value"
+        ></v-select>
         <v-text-field
-          v-model="record.nombre"
-          label="Nombre de la Actividad"
+          v-model="record.horaInicio"
+          label="Hora de Inicio"
           :rules="[rules.required]"
+          placeholder="HH:MM:SS"
         ></v-text-field>
         <v-text-field
-          v-model="record.descripcion"
-          label="Descripción de la Actividad"
+          v-model="record.horaFin"
+          label="Hora de Fin"
+          :rules="[rules.required]"
+          placeholder="HH:MM:SS"
+        ></v-text-field>
+        <v-text-field
+          v-model="record.salon"
+          label="Salón"
           :rules="[rules.required]"
         ></v-text-field>
-        <v-number-input
-          v-model="record.porcentaje"
-          label="Porcentaje"
-          :rules="[rules.required]"
-          :min="0"
-          :max="100"
-          suffix="%"
-        ></v-number-input>
         
         <v-btn class="mt-2" @click="dialog = false" block>Cancelar</v-btn>
         <v-btn class="mt-2" type="submit" block color="green">Aceptar</v-btn>
@@ -96,7 +109,7 @@
   </v-dialog>
   
   <v-dialog v-model="confirmDialog.enabled" max-width="500">
-    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'la Actividad' : 'todas las Actividades'}?`" 
+    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'el Horario' : 'todos los Horarios'}?`" 
       text="¿Confirma que quiere eliminar el/los registro(s)?"
     >
     <template v-slot:prepend>
@@ -119,30 +132,46 @@
 import { ref, onMounted, shallowRef } from "vue";
 import axios from "axios";
 
+const API_URL_GRADOS = "http://localhost:8080/api/grados";
+const grados = ref([]);
+
 const API_URL_MATERIAS = "http://localhost:8080/api/materias";
 const materias = ref([]);
 
-const API_URL_ACTIVIDADES = "http://localhost:8080/api/actividades"
+const API_URL_HORARIOS = "http://localhost:8080/api/horarios/horarios-clases";
 const items = ref([]);
 const loading = ref(true);
 const selected = ref([]);
 const headers = [
-  { title: "ID", key: "idActividad" },
+  { title: "ID", key: "idHorario" },
+  // { title: "ID Grado", key: "idGrado" },
+  { title: "Grado", key: "nombreGrado" },
   // { title: "ID Materia", key: "idMateria" },
   { title: "Materia", key: "nombreMateria" },
-  { title: "Nombre", key: "nombre" },
-  { title: "Descripción", key: "descripcion" },
-  { title: "Porcentaje (%)", key: "porcentaje" },
+  { title: "Día de la Semana", key: "diaSemana" },
+  { title: "Hora de Inicio", key: "horaInicio" },
+  { title: "Hora de Fin", key: "horaFin" },
+  { title: "Salón", key: "salon" },
   { title: "Acciones", key: "acciones" },
 ];
 const FORM_DATA = {
-  idActividad: null,
+  idHoraio: null,
+  idGrado: null,
   idMateria: null,
-  nombre: "",
-  descripcion: "",
-  porcentaje: null
+  diaSemana: "",
+  horaInicio: "",
+  horaFin: "",
+  salon: ""
 };
 const search = ref('');
+const dias = ref([
+  {value: 'Lunes'},
+  {value: 'Martes'},
+  {value: 'Miércoles'},
+  {value: 'Jueves'},
+  {value: 'Viernes'}
+]);
+
 
 const snackbar = ref(false);
 const snackbarColor = ref("success");
@@ -180,7 +209,7 @@ function edit(item) {
 
 async function remove(id) {
   await axios
-    .delete(`${API_URL_MATERIAS}/delete/${id}`)
+    .delete(`${API_URL_HORARIOS}/delete/${id}`)
     .then((res) => {
       showSnackbar(res.data);
     })
@@ -197,14 +226,14 @@ async function removeSelected() {
 
   try {
     await Promise.all(
-      selected.value.map((actividad) =>
-        axios.delete(`${API_URL_ACTIVIDADES}/delete/${actividad.idActividad}`)
+      selected.value.map((horario) =>
+        axios.delete(`${API_URL_HORARIOS}/delete/${horario.idHorario}`)
       )
     );
-    showSnackbar("Actividades eliminadas correctamente");
+    showSnackbar("Horarios eliminados correctamente");
     selected.value = [];
   } catch (error) {
-    showSnackbar("Error al eliminar las actividades", "error");
+    showSnackbar("Error al eliminar los horarios", "error");
   }
   fetchAll();
   confirmDialog.value.enabled = false;
@@ -214,7 +243,7 @@ async function removeSelected() {
 async function save() {
   if (editing.value) {
     await axios
-      .put(`${API_URL_ACTIVIDADES}/update/${record.value.idActividad}`, record.value)
+      .put(`${API_URL_HORARIOS}/update/${record.value.idHorario}`, record.value)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -224,7 +253,7 @@ async function save() {
       });
   } else {
     await axios
-      .post(`${API_URL_ACTIVIDADES}/create`, record.value)
+      .post(`${API_URL_HORARIOS}/create`, record.value)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -247,7 +276,9 @@ function handleSubmit(e) {
   if (e.target[0].value === "") valid.value = false;
   if (e.target[1].value === "") valid.value = false;
   if (e.target[2].value === "") valid.value = false;
+  if (e.target[3].value === "") valid.value = false;
   if (e.target[4].value === "") valid.value = false;
+  if (e.target[5].value === "") valid.value = false;
   
   if (valid.value) {
     save();
@@ -260,16 +291,20 @@ function handleSubmit(e) {
 
 const fetchAll = async () => {
   Promise.all([
+    axios.get(`${API_URL_GRADOS}/getall`),
     axios.get(`${API_URL_MATERIAS}/getall`),
-    axios.get(`${API_URL_ACTIVIDADES}/getall`)
-  ]).then(([materiasRes, actividadesRes]) => {
+    axios.get(`${API_URL_HORARIOS}/getall`)
+  ]).then(([gradosRes, materiasRes, horariosRes]) => {
+    grados.value = gradosRes.data;
     materias.value = materiasRes.data;
     
-    items.value = actividadesRes.data.map(item => {
+    items.value = horariosRes.data.map(item => {
+      const grado = grados.value.find(g => g.idGrado === item.idGrado);
       const materia = materias.value.find(m => m.idMateria === item.idMateria);
       return {
         ...item,
-        nombreMateria: materia ? materia.nombre : '...'
+        nombreGrado: grado ? grado.nombre : '...',
+        nombreMateria: materia ? materia.nombre : '...',
       }
     });
     

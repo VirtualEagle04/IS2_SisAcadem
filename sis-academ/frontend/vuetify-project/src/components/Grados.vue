@@ -7,6 +7,7 @@
     return-object
     v-model="selected"
     show-select
+    :search="search"
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
@@ -14,6 +15,14 @@
           <v-icon start>mdi-chevron-triple-up</v-icon>
           Gestión de Grados
         </v-toolbar-title>
+        <v-text-field
+          v-model="search"
+          label="Buscar"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          hide-details
+          single-line
+        ></v-text-field>
         <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
           Agregar un Grado
         </v-btn>
@@ -106,6 +115,7 @@ const FORM_DATA = {
   idGrado: null,
   nombre: "",
 };
+const search = ref('');
 
 const snackbar = ref(false);
 const snackbarColor = ref("success");

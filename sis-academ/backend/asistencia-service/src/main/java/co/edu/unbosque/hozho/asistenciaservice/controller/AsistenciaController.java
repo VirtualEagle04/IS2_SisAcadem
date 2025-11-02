@@ -35,7 +35,7 @@ public class AsistenciaController {
         return new ResponseEntity<>(asistencias, HttpStatus.OK);
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Asistencia asistencia) {
         int status = asistenciaServ.updateById(id, asistencia);
         if (status == 1) return new ResponseEntity<>("No existe una asistencia con ese ID", HttpStatus.NOT_FOUND);

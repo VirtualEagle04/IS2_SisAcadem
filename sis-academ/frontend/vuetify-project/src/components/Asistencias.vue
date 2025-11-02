@@ -12,8 +12,8 @@
     <template v-slot:top>
       <v-toolbar flat class="rounded">
         <v-toolbar-title>
-          <v-icon start>mdi-format-list-checkbox</v-icon>
-          Gestión de Actividades
+          <v-icon start>mdi-calendar-clock</v-icon>
+          Gestión de Asistencias
         </v-toolbar-title>
         <v-text-field
           v-model="search"
@@ -24,7 +24,7 @@
           single-line
         ></v-text-field>
         <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
-          Agregar una Actividad
+          Agregar una Asistencia
         </v-btn>
         <v-btn
           class="me-2"
@@ -33,9 +33,16 @@
           @click="handleConfirm"
           :disabled="selected.length === 0"
         >
-          Eliminar Actividades
+          Eliminar Asistencias
         </v-btn>
       </v-toolbar>
+    </template>
+    
+    <template v-slot:item.estado="{ item }">
+      <v-chip v-if="item.estado ==='Presente'" color="green">{{ item.estado }}</v-chip>
+      <v-chip v-if="item.estado ==='Ausente'" color="red">{{ item.estado }}</v-chip>
+      <v-chip v-if="item.estado ==='Excusado'" color="grey-darken-2">{{ item.estado }}</v-chip>
+      <v-chip v-if="item.estado ==='Tarde'" color="orange">{{ item.estado }}</v-chip>
     </template>
 
     <template v-slot:item.acciones="{ item }">
@@ -51,42 +58,42 @@
           color="red"
           icon="mdi-delete"
           size="small"
-          @click="handleConfirm(item.idActividad)"
+          @click="handleConfirm(item.idAsistencia)"
         ></v-icon>
       </div>
     </template>
   </v-data-table>
 
   <v-dialog v-model="dialog" max-width="500">
-    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} una Actividad`">
+    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} una Asistencia`">
       
       <v-form @submit.prevent="handleSubmit">
-        
+
         <v-select
-          v-model="record.idMateria"
-          label="Materia"
-          :items="materias"
-          item-title="nombre"
-          item-value="idMateria"
+          v-model="record.idEstudiante"
+          label="Estudiante"
+          :items="estudiantes"
+          item-title="docIdentidad"
+          item-value="idUsuario"
+        ></v-select>
+        <v-select
+          v-model="record.idClase"
+          label="Horario de Clase"
+          :items="horariosClases"
+          item-title="nombreClase"
+          item-value="idHorario"
+        ></v-select>
+        <v-select
+          v-model="record.estado"
+          label="Estado"
+          :items="estados"
+          item-title="value"
+          item-value="value"
         ></v-select>
         <v-text-field
-          v-model="record.nombre"
-          label="Nombre de la Actividad"
-          :rules="[rules.required]"
+          v-model="record.observacion"
+          label="Observaciones"
         ></v-text-field>
-        <v-text-field
-          v-model="record.descripcion"
-          label="Descripción de la Actividad"
-          :rules="[rules.required]"
-        ></v-text-field>
-        <v-number-input
-          v-model="record.porcentaje"
-          label="Porcentaje"
-          :rules="[rules.required]"
-          :min="0"
-          :max="100"
-          suffix="%"
-        ></v-number-input>
         
         <v-btn class="mt-2" @click="dialog = false" block>Cancelar</v-btn>
         <v-btn class="mt-2" type="submit" block color="green">Aceptar</v-btn>
@@ -96,7 +103,7 @@
   </v-dialog>
   
   <v-dialog v-model="confirmDialog.enabled" max-width="500">
-    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'la Actividad' : 'todas las Actividades'}?`" 
+    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'la Asistencia' : 'todas las Asistencias'}?`" 
       text="¿Confirma que quiere eliminar el/los registro(s)?"
     >
     <template v-slot:prepend>
@@ -119,30 +126,43 @@
 import { ref, onMounted, shallowRef } from "vue";
 import axios from "axios";
 
+const API_URL_ESTUDIANTES = "http://localhost:8080/api/usuarios/usuarios";
+const estudiantes = ref([]);
+
+const API_URL_HORARIOS_CLASE = "http://localhost:8080/api/horarios/horarios-clases";
+const horariosClases = ref([]);
+
 const API_URL_MATERIAS = "http://localhost:8080/api/materias";
 const materias = ref([]);
 
-const API_URL_ACTIVIDADES = "http://localhost:8080/api/actividades"
+const API_URL_ASISTENCIAS = "http://localhost:8080/api/asistencias"
 const items = ref([]);
 const loading = ref(true);
 const selected = ref([]);
 const headers = [
-  { title: "ID", key: "idActividad" },
-  // { title: "ID Materia", key: "idMateria" },
-  { title: "Materia", key: "nombreMateria" },
-  { title: "Nombre", key: "nombre" },
-  { title: "Descripción", key: "descripcion" },
-  { title: "Porcentaje (%)", key: "porcentaje" },
+  { title: "ID", key: "idAsistencia" },
+  // { title: "ID Estudiante", key: "idEstudiante" },
+  { title: "Estudiante", key: "docEstudiante" },
+  // { title: "ID Clase", key: "idClase" },
+  { title: "Clase", key: "nombreClase" },
+  { title: "Estado", key: "estado" },
+  { title: "Observaciones", key: "observacion" },
   { title: "Acciones", key: "acciones" },
 ];
 const FORM_DATA = {
-  idActividad: null,
-  idMateria: null,
-  nombre: "",
-  descripcion: "",
-  porcentaje: null
+  idAsistencia: null,
+  idEstudiante: null,
+  idClase: null,
+  tipo: "",
+  observacion: null
 };
 const search = ref('');
+const estados = ref([
+  {value: 'Presente'},
+  {value: 'Ausente'},
+  {value: 'Tarde'},
+  {value: 'Excusado'}
+]);
 
 const snackbar = ref(false);
 const snackbarColor = ref("success");
@@ -180,7 +200,7 @@ function edit(item) {
 
 async function remove(id) {
   await axios
-    .delete(`${API_URL_MATERIAS}/delete/${id}`)
+    .delete(`${API_URL_ASISTENCIAS}/delete/${id}`)
     .then((res) => {
       showSnackbar(res.data);
     })
@@ -197,14 +217,14 @@ async function removeSelected() {
 
   try {
     await Promise.all(
-      selected.value.map((actividad) =>
-        axios.delete(`${API_URL_ACTIVIDADES}/delete/${actividad.idActividad}`)
+      selected.value.map((asistencia) =>
+        axios.delete(`${API_URL_ASISTENCIAS}/delete/${asistencia.idAsistencia}`)
       )
     );
-    showSnackbar("Actividades eliminadas correctamente");
+    showSnackbar("Asistencias eliminadas correctamente");
     selected.value = [];
   } catch (error) {
-    showSnackbar("Error al eliminar las actividades", "error");
+    showSnackbar("Error al eliminar las asistencias", "error");
   }
   fetchAll();
   confirmDialog.value.enabled = false;
@@ -214,7 +234,7 @@ async function removeSelected() {
 async function save() {
   if (editing.value) {
     await axios
-      .put(`${API_URL_ACTIVIDADES}/update/${record.value.idActividad}`, record.value)
+      .put(`${API_URL_ASISTENCIAS}/update/${record.value.idAsistencia}`, record.value)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -224,7 +244,7 @@ async function save() {
       });
   } else {
     await axios
-      .post(`${API_URL_ACTIVIDADES}/create`, record.value)
+      .post(`${API_URL_ASISTENCIAS}/create`, record.value)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -247,7 +267,6 @@ function handleSubmit(e) {
   if (e.target[0].value === "") valid.value = false;
   if (e.target[1].value === "") valid.value = false;
   if (e.target[2].value === "") valid.value = false;
-  if (e.target[4].value === "") valid.value = false;
   
   if (valid.value) {
     save();
@@ -260,16 +279,30 @@ function handleSubmit(e) {
 
 const fetchAll = async () => {
   Promise.all([
+    axios.get(`${API_URL_ESTUDIANTES}/getall`),
     axios.get(`${API_URL_MATERIAS}/getall`),
-    axios.get(`${API_URL_ACTIVIDADES}/getall`)
-  ]).then(([materiasRes, actividadesRes]) => {
+    axios.get(`${API_URL_HORARIOS_CLASE}/getall`),
+    axios.get(`${API_URL_ASISTENCIAS}/getall`)
+  ]).then(([estudiantesRes, materiasRes, horariosRes, asistenciasRes]) => {
+    estudiantes.value = estudiantesRes.data;
     materias.value = materiasRes.data;
     
-    items.value = actividadesRes.data.map(item => {
-      const materia = materias.value.find(m => m.idMateria === item.idMateria);
+    horariosClases.value = horariosRes.data.map(item => {
+      const nombreMateria = materias.value.find(m => m.idMateria === item.idMateria);
       return {
         ...item,
-        nombreMateria: materia ? materia.nombre : '...'
+        nombreClase: item ? (nombreMateria.nombre + " - " + item.diaSemana + " - " + item.horaInicio) : '...'
+      }
+    });
+    
+    items.value = asistenciasRes.data.map(item => {
+      const estudiante = estudiantes.value.find(e => e.idUsuario === item.idEstudiante);
+      const clase = horariosClases.value.find(c => c.idHorario === item.idClase);
+      const nombreMateria = materias.value.find(m => m.idMateria === clase.idMateria);
+      return {
+        ...item,
+        docEstudiante: estudiante ? estudiante.docIdentidad : '...',
+        nombreClase: clase ? (nombreMateria.nombre + " - " + clase.diaSemana + " - " + clase.horaInicio) : '...'
       }
     });
     

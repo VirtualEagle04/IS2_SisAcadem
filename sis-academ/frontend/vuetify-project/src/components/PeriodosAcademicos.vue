@@ -12,8 +12,8 @@
     <template v-slot:top>
       <v-toolbar flat class="rounded">
         <v-toolbar-title>
-          <v-icon start>mdi-format-list-checkbox</v-icon>
-          Gestión de Actividades
+          <v-icon start>mdi-calendar-range</v-icon>
+          Gestión de Periodos Académicos
         </v-toolbar-title>
         <v-text-field
           v-model="search"
@@ -24,7 +24,7 @@
           single-line
         ></v-text-field>
         <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
-          Agregar una Actividad
+          Agregar un Periodo Académico
         </v-btn>
         <v-btn
           class="me-2"
@@ -33,7 +33,7 @@
           @click="handleConfirm"
           :disabled="selected.length === 0"
         >
-          Eliminar Actividades
+          Eliminar Periodos Académicos
         </v-btn>
       </v-toolbar>
     </template>
@@ -51,42 +51,34 @@
           color="red"
           icon="mdi-delete"
           size="small"
-          @click="handleConfirm(item.idActividad)"
+          @click="handleConfirm(item.idPeriodo)"
         ></v-icon>
       </div>
     </template>
   </v-data-table>
 
   <v-dialog v-model="dialog" max-width="500">
-    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} una Actividad`">
+    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} un Periodo Académico`">
       
       <v-form @submit.prevent="handleSubmit">
-        
-        <v-select
-          v-model="record.idMateria"
-          label="Materia"
-          :items="materias"
-          item-title="nombre"
-          item-value="idMateria"
-        ></v-select>
+
         <v-text-field
           v-model="record.nombre"
-          label="Nombre de la Actividad"
+          label="Nombre del Periodo Académico"
           :rules="[rules.required]"
         ></v-text-field>
         <v-text-field
-          v-model="record.descripcion"
-          label="Descripción de la Actividad"
+          v-model="record.fechaInicio"
+          label="Fecha de Inicio"
           :rules="[rules.required]"
+          placeholder="YYYY-MM-DD"
         ></v-text-field>
-        <v-number-input
-          v-model="record.porcentaje"
-          label="Porcentaje"
+        <v-text-field
+          v-model="record.fechaFin"
+          label="Fecha de Fin"
           :rules="[rules.required]"
-          :min="0"
-          :max="100"
-          suffix="%"
-        ></v-number-input>
+          placeholder="YYYY-MM-DD"
+        ></v-text-field>
         
         <v-btn class="mt-2" @click="dialog = false" block>Cancelar</v-btn>
         <v-btn class="mt-2" type="submit" block color="green">Aceptar</v-btn>
@@ -96,7 +88,7 @@
   </v-dialog>
   
   <v-dialog v-model="confirmDialog.enabled" max-width="500">
-    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'la Actividad' : 'todas las Actividades'}?`" 
+    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'el Periodo Académico' : 'todos los Periodos Académicos'}?`" 
       text="¿Confirma que quiere eliminar el/los registro(s)?"
     >
     <template v-slot:prepend>
@@ -119,28 +111,22 @@
 import { ref, onMounted, shallowRef } from "vue";
 import axios from "axios";
 
-const API_URL_MATERIAS = "http://localhost:8080/api/materias";
-const materias = ref([]);
-
-const API_URL_ACTIVIDADES = "http://localhost:8080/api/actividades"
+const API_URL_PERIODOS = "http://localhost:8080/api/horarios/periodos-academicos";
 const items = ref([]);
 const loading = ref(true);
 const selected = ref([]);
 const headers = [
-  { title: "ID", key: "idActividad" },
-  // { title: "ID Materia", key: "idMateria" },
-  { title: "Materia", key: "nombreMateria" },
+  { title: "ID", key: "idPeriodo" },
   { title: "Nombre", key: "nombre" },
-  { title: "Descripción", key: "descripcion" },
-  { title: "Porcentaje (%)", key: "porcentaje" },
+  { title: "Fecha de Inicio", key: "fechaInicio" },
+  { title: "Fecha de Fin", key: "fechaFin" },
   { title: "Acciones", key: "acciones" },
 ];
 const FORM_DATA = {
-  idActividad: null,
-  idMateria: null,
+  idPeriodo: null,
   nombre: "",
-  descripcion: "",
-  porcentaje: null
+  fechaInicio: "",
+  fechaFin: ""
 };
 const search = ref('');
 
@@ -180,14 +166,14 @@ function edit(item) {
 
 async function remove(id) {
   await axios
-    .delete(`${API_URL_MATERIAS}/delete/${id}`)
+    .delete(`${API_URL_PERIODOS}/delete/${id}`)
     .then((res) => {
       showSnackbar(res.data);
     })
     .catch((error) => {
       showSnackbar(error.response.data, "error");
     });
-  fetchAll();
+  fetch();
   confirmDialog.value.enabled = false;
   confirmDialog.value.id = null;
 }
@@ -197,16 +183,16 @@ async function removeSelected() {
 
   try {
     await Promise.all(
-      selected.value.map((actividad) =>
-        axios.delete(`${API_URL_ACTIVIDADES}/delete/${actividad.idActividad}`)
+      selected.value.map((periodo) =>
+        axios.delete(`${API_URL_PERIODOS}/delete/${periodo.idPeriodo}`)
       )
     );
-    showSnackbar("Actividades eliminadas correctamente");
+    showSnackbar("Periodos Académicos eliminados correctamente");
     selected.value = [];
   } catch (error) {
-    showSnackbar("Error al eliminar las actividades", "error");
+    showSnackbar("Error al eliminar los periodos académicos", "error");
   }
-  fetchAll();
+  fetch();
   confirmDialog.value.enabled = false;
   confirmDialog.value.id = null;
 }
@@ -214,7 +200,7 @@ async function removeSelected() {
 async function save() {
   if (editing.value) {
     await axios
-      .put(`${API_URL_ACTIVIDADES}/update/${record.value.idActividad}`, record.value)
+      .put(`${API_URL_PERIODOS}/update/${record.value.idPeriodo}`, record.value)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -224,7 +210,7 @@ async function save() {
       });
   } else {
     await axios
-      .post(`${API_URL_ACTIVIDADES}/create`, record.value)
+      .post(`${API_URL_PERIODOS}/create`, record.value)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -233,7 +219,7 @@ async function save() {
         showSnackbar(error.response.data, "error");
       });
   }
-  fetchAll();
+  fetch();
 }
 
 function handleConfirm(id) {
@@ -247,7 +233,6 @@ function handleSubmit(e) {
   if (e.target[0].value === "") valid.value = false;
   if (e.target[1].value === "") valid.value = false;
   if (e.target[2].value === "") valid.value = false;
-  if (e.target[4].value === "") valid.value = false;
   
   if (valid.value) {
     save();
@@ -258,26 +243,14 @@ function handleSubmit(e) {
   valid.value = true;
 }
 
-const fetchAll = async () => {
-  Promise.all([
-    axios.get(`${API_URL_MATERIAS}/getall`),
-    axios.get(`${API_URL_ACTIVIDADES}/getall`)
-  ]).then(([materiasRes, actividadesRes]) => {
-    materias.value = materiasRes.data;
-    
-    items.value = actividadesRes.data.map(item => {
-      const materia = materias.value.find(m => m.idMateria === item.idMateria);
-      return {
-        ...item,
-        nombreMateria: materia ? materia.nombre : '...'
-      }
-    });
-    
+const fetch = async () => {
+  await axios.get(`${API_URL_PERIODOS}/getall`).then((res) => {
+    items.value = res.data;
     loading.value = false;
   });
 };
 
 onMounted(() => {
-  fetchAll();
+  fetch();
 });
 </script>

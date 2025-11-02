@@ -7,6 +7,8 @@
     return-object
     v-model="selected"
     show-select
+    :search="search"
+    :items-per-page="-1"
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
@@ -14,6 +16,14 @@
           <v-icon start>mdi-account-school</v-icon>
           Gestión de Usuarios
         </v-toolbar-title>
+        <v-text-field
+          v-model="search"
+          label="Buscar"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          hide-details
+          single-line
+        ></v-text-field>
         <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
           Agregar un Usuario
         </v-btn>
@@ -29,16 +39,13 @@
       </v-toolbar>
     </template>
     
-    <template v-slot:item.idRol="{ item }">
-      {{ roles.find(rol => rol.idRol === item.idRol)?.nombre || 'Sin rol' }}
-    </template>
-    
     <template v-slot:item.clave="{ item }">
       -
     </template>
     
     <template v-slot:item.activo="{ item }">
-      {{ item.activo ? 'Sí' : 'No' }}
+      <v-chip v-if="item.activo" color="green">Sí</v-chip>
+      <v-chip v-if="!item.activo" color="red">No</v-chip>
     </template>
 
     <template v-slot:item.acciones="{ item }">
@@ -139,8 +146,9 @@
         ></v-text-field>
         <v-switch color="light-green" v-model="record.activo" label="Activo"></v-switch>
         
-        <!-- <v-select
-          v-model="estudianteDetalleRecord.idCurso"
+        <v-select
+          v-if="record.idRol == 5"
+          v-model="record.idCurso"
           label="Curso"
           :items="cursos"
           item-title="nombre"
@@ -148,12 +156,13 @@
         ></v-select>
         
         <v-select
-          v-model="estudianteDetalleRecord.idAcudiente"
+          v-if="record.idRol == 5"
+          v-model="record.idAcudiente"
           label="Acudiente"
           :items="items"
           item-title="docIdentidad"
           item-value="idUsuario"
-        ></v-select> -->
+        ></v-select>
         
         <v-btn class="mt-2" @click="dialog = false" block>Cancelar</v-btn>
         <v-btn class="mt-2" type="submit" block color="green">Aceptar</v-btn>
@@ -192,27 +201,34 @@ const roles = ref([]);
 const API_URL_CURSOS = "http://localhost:8080/api/cursos";
 const cursos = ref([]);
 
-const API_URL_USUARIOS = "http://localhost:8080/api/usuarios/usuarios";
 const API_URL_ESTUDIANTES = "http://localhost:8080/api/usuarios/estudiantes-detalles";
+const estudiantes = ref([]);
+
+const API_URL_USUARIOS = "http://localhost:8080/api/usuarios/usuarios";
 const items = ref([]);
 const loading = ref(true);
 const selected = ref([]);
 const headers = [
   { title: "ID", key: "idUsuario" },
-  { title: "Rol", key: "idRol" },
+  // { title: "ID Rol", key: "idRol" },
+  { title: "Rol", key: "nombreRol" },
   { title: "Usuario", key: "usuario" },
-  { title: "Clave", key: "clave" },
+  // { title: "Clave", key: "clave" },
   { title: "Nombres", key: "nombres" },
   { title: "Apellidos", key: "apellidos" },
   { title: "Fecha de Nacimiento", key: "fechaNacimiento" },
   { title: "Edad", key: "edad" },
   { title: "Sexo", key: "sexo" },
   { title: "Doc. Identidad", key: "docIdentidad" },
-  { title: "Ciudad de Nacimiento", key: "ciudadNacimiento" },
+  // { title: "Ciudad de Nacimiento", key: "ciudadNacimiento" },
   { title: "Teléfono", key: "telefono" },
   { title: "Correo", key: "correo" },
-  { title: "Fecha de Registro", key: "fechaRegistro" },
+  // { title: "Fecha de Registro", key: "fechaRegistro" },
   { title: "Activo", key: "activo" },
+  // { title: "ID Curso", key: "idCurso" },
+  { title: "Curso", key: "nombreCurso" },
+  // { title: "ID Acudiente", key: "idAcudiente" },
+  { title: "Acudiente", key: "docAcudiente" },
   { title: "Acciones", key: "acciones" },
 ];
 const FORM_DATA = {
@@ -231,16 +247,14 @@ const FORM_DATA = {
   correo: "",
   fechaRegistro: null,
   activo: true,
-};
-
-const DETALLE_FORM_DATA = {
+  
   idDetalle: null,
-  idUsuario: null,
   idCurso: null,
   idAcudiente: null
 };
+const search = ref('');
+
 const passVisible = ref(false)
-const estudianteDetalleRecord = ref(DETALLE_FORM_DATA);
 
 const snackbar = ref(false);
 const snackbarColor = ref("success");
@@ -272,8 +286,6 @@ function add() {
   editing.value = false;
   record.value = { ...FORM_DATA };
   dialog.value = true;
-  
-  estudianteDetalleRecord.value = {...DETALLE_FORM_DATA};
 }
 
 function edit(item) {
@@ -283,6 +295,13 @@ function edit(item) {
 }
 
 async function remove(id) {
+  
+  const usuario = items.value.find(u => u.idUsuario === id);
+  
+  if (usuario && usuario.idDetalle) {
+    await axios.delete(`${API_URL_ESTUDIANTES}/delete/${usuario.idDetalle}`);
+  }
+  
   await axios
     .delete(`${API_URL_USUARIOS}/delete/${id}`)
     .then((res) => {
@@ -291,7 +310,7 @@ async function remove(id) {
     .catch((error) => {
       showSnackbar(error.response.data, "error");
     });
-  fetch();
+  fetchAll();
   confirmDialog.value.enabled = false;
   confirmDialog.value.id = null;
 }
@@ -301,24 +320,57 @@ async function removeSelected() {
 
   try {
     await Promise.all(
-      selected.value.map((usuario) =>
-        axios.delete(`${API_URL_USUARIOS}/delete/${usuario.idUsuario}`)
-      )
+      selected.value.map((usuario) => {
+        
+        if (usuario.idDetalle) {
+          axios.delete(`${API_URL_ESTUDIANTES}/delete/${usuario.idDetalle}`);
+        }
+        
+        axios.delete(`${API_URL_USUARIOS}/delete/${usuario.idUsuario}`);  
+      })
     );
     showSnackbar("Usuarios eliminados correctamente");
     selected.value = [];
   } catch (error) {
     showSnackbar("Error al eliminar los usuarios", "error");
   }
-  fetch();
+  fetchAll();
   confirmDialog.value.enabled = false;
   confirmDialog.value.id = null;
 }
 
 async function save() {
+  const usuarioData = {
+    idUsuario: record.value.idUsuario,
+    idRol: record.value.idRol,
+    usuario: record.value.usuario,
+    clave: record.value.clave,
+    nombres: record.value.nombres,
+    apellidos: record.value.apellidos,
+    fechaNacimiento: record.value.fechaNacimiento,
+    edad: record.value.edad,
+    sexo: record.value.sexo,
+    docIdentidad: record.value.docIdentidad,
+    ciudadNacimiento: record.value.ciudadNacimiento,
+    telefono: record.value.telefono,
+    correo: record.value.correo,
+    fechaRegistro: record.value.fechaRegistro,
+    activo: record.value.activo
+  };
+  
+  const detalleData = {
+    idDetalle: record.value.idDetalle,
+    idUsuario: record.value.idUsuario,
+    idCurso: record.value.idCurso,
+    idAcudiente: record.value.idAcudiente
+  };
+  
+  const esEstudiante = record.value.idRol === 5;
+  
   if (editing.value) {
+    // Actualizar Usuario
     await axios
-      .put(`${API_URL_USUARIOS}/update/${record.value.idUsuario}`, record.value)
+      .put(`${API_URL_USUARIOS}/update/${record.value.idUsuario}`, usuarioData)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -326,6 +378,41 @@ async function save() {
       .catch((error) => {
         showSnackbar(error.response.data, "error");
       });
+    
+    // Si es estudiante, actuaizar tambien Estudiante_Detalle
+    if (esEstudiante) {
+      if (record.value.idDetalle) {
+        // Ya existe un detalle, actualizarlo
+        await axios
+          .put(`${API_URL_ESTUDIANTES}/update/${record.value.idDetalle}`, detalleData)
+          .then((res) => {
+            showSnackbar(res.data);
+          })
+          .catch((error) => {
+            showSnackbar(error.response.data, "error");
+          });
+      } else {
+        // No existe detalle, crearlo
+        await axios
+          .post(`${API_URL_ESTUDIANTES}/create`, detalleData)
+          .then((res) => {
+            showSnackbar(res.data);
+          })
+          .catch((error) => {
+            showSnackbar(error.response.data, "error");
+          });
+      }
+    } else if (record.value.idDetalle) {
+      // Si ya no es un estudiante, pero tenía un detalle, eliminarlo
+      await axios
+        .delete(`${API_URL_ESTUDIANTES}/delete/${record.value.idDetalle}`)
+        .then((res) => {
+          showSnackbar(res.data);
+        })
+        .catch((error) => {
+          showSnackbar(error.response.data, "error");
+        });
+    } 
   } else {
     await axios
       .post(`${API_URL_USUARIOS}/create`, record.value)
@@ -336,8 +423,24 @@ async function save() {
       .catch((error) => {
         showSnackbar(error.response.data, "error");
       });
+    
+    // Si es estudiante, crear también el registro en Estudiante_Detalle
+    if (esEstudiante) {
+      const res = await axios.get(`${API_URL_USUARIOS}/getall`);
+      const nuevoUsuario = res.data.find(u => u.docIdentidad === usuarioData.docIdentidad);
+      detalleData.idUsuario = nuevoUsuario.idUsuario;
+      
+      await axios
+        .post(`${API_URL_ESTUDIANTES}/create`, detalleData)
+        .then((res) => {
+          showSnackbar(res.data);
+        })
+        .catch((error) => {
+          showSnackbar(error.response.data, "error");
+        });
+    }
   }
-  fetch();
+  fetchAll();
 }
 
 function handleConfirm(id) {
@@ -369,30 +472,40 @@ function handleSubmit(e) {
   valid.value = true;
 }
 
-const fetch = async () => {
-  await axios.get(`${API_URL_USUARIOS}/getall`).then((res) => {
-    items.value = res.data;
+const fetchAll = async () => {
+  Promise.all([
+    axios.get(`${API_URL_ROLES}/getall`),
+    axios.get(`${API_URL_CURSOS}/getall`),
+    axios.get(`${API_URL_ESTUDIANTES}/getall`),
+    axios.get(`${API_URL_USUARIOS}/getall`)
+  ]).then(([rolesRes, cursosRes, estudiantesRes, usuariosRes]) => {
+    roles.value = rolesRes.data;
+    cursos.value = cursosRes.data;
+    estudiantes.value = estudiantesRes.data;
+    const usuariosCopy = usuariosRes.data;
+    
+    items.value = usuariosRes.data.map(item => {
+      const rol = roles.value.find(r => r.idRol === item.idRol);
+      const estudiante = estudiantes.value.find(e => e.idUsuario === item.idUsuario);
+      const curso = estudiante ? cursos.value.find(c => c.idCurso === estudiante.idCurso) : null;
+      const acudiente = estudiante ? usuariosCopy.find(a => a.idUsuario === estudiante.idAcudiente) : null;
+      
+      return {
+        ...item,
+        nombreRol: rol ? rol.nombre : '...',
+        idDetalle: estudiante?.idDetalle ?? null,
+        idCurso: curso?.idCurso ?? '-',
+        nombreCurso: curso?.nombre ?? '-',
+        idAcudiente: acudiente?.idUsuario ?? '-',
+        docAcudiente: acudiente?.docIdentidad ?? '-'
+      }
+    });
+    
     loading.value = false;
   });
 };
 
-const fetchRoles = async () => {
-  await axios.get(`${API_URL_ROLES}/getall`).then((res) => {
-    roles.value = res.data;
-    loading.value = false;
-  });
-}
-
-const fetchCursos = async () => {
-  await axios.get(`${API_URL_CURSOS}/getall`).then((res) => {
-    cursos.value = res.data;
-    loading.value = false;
-  });
-}
-
 onMounted(() => {
-  fetch();
-  fetchRoles();
-  fetchCursos();
+  fetchAll();
 });
 </script>

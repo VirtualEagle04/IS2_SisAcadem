@@ -7,6 +7,7 @@
     return-object
     v-model="selected"
     show-select
+    :search="search"
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
@@ -14,6 +15,14 @@
           <v-icon start>mdi-book-multiple</v-icon>
           Gestión de Materias
         </v-toolbar-title>
+        <v-text-field
+          v-model="search"
+          label="Buscar"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          hide-details
+          single-line
+        ></v-text-field>
         <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
           Agregar una Materia
         </v-btn>
@@ -27,10 +36,6 @@
           Eliminar Materias
         </v-btn>
       </v-toolbar>
-    </template>
-    
-    <template v-slot:item.idDocente="{ item }">
-      {{ usuarios.find(doc => doc.idUsuario === item.idDocente)?.nombres || 'Sin docente' }}
     </template>
 
     <template v-slot:item.acciones="{ item }">
@@ -115,7 +120,8 @@ const loading = ref(true);
 const selected = ref([]);
 const headers = [
   { title: "ID", key: "idMateria" },
-  { title: "Docente", key: "idDocente" },
+  // { title: "ID Docente", key: "idDocente" },
+  { title: "Docente", key: "docDocente" },
   { title: "Nombre", key: "nombre" },
   { title: "Descripción", key: "descripcion" },
   { title: "Acciones", key: "acciones" },
@@ -126,6 +132,7 @@ const FORM_DATA = {
   nombre: "",
   descripcion: ""
 };
+const search = ref('');
 
 const snackbar = ref(false);
 const snackbarColor = ref("success");
@@ -170,7 +177,7 @@ async function remove(id) {
     .catch((error) => {
       showSnackbar(error.response.data, "error");
     });
-  fetch();
+  fetchAll();
   confirmDialog.value.enabled = false;
   confirmDialog.value.id = null;
 }
@@ -189,7 +196,7 @@ async function removeSelected() {
   } catch (error) {
     showSnackbar("Error al eliminar las materias", "error");
   }
-  fetch();
+  fetchAll();
   confirmDialog.value.enabled = false;
   confirmDialog.value.id = null;
 }
@@ -216,7 +223,7 @@ async function save() {
         showSnackbar(error.response.data, "error");
       });
   }
-  fetch();
+  fetchAll();
 }
 
 function handleConfirm(id) {
@@ -240,22 +247,26 @@ function handleSubmit(e) {
   valid.value = true;
 }
 
-const fetch = async () => {
-  await axios.get(`${API_URL_MATERIAS}/getall`).then((res) => {
-    items.value = res.data;
+const fetchAll = async () => {
+  Promise.all([
+    axios.get(`${API_URL_USUARIOS}/getall`),
+    axios.get(`${API_URL_MATERIAS}/getall`)
+  ]).then(([usuariosRes, materiasRes]) => {
+    usuarios.value = usuariosRes.data;
+    
+    items.value = materiasRes.data.map(item => {
+      const usuario = usuarios.value.find(u => u.idUsuario === item.idDocente);
+      return {
+        ...item,
+        docDocente: usuario ? usuario.docIdentidad : '...'
+      }
+    });
+    
     loading.value = false;
   });
 };
 
-const fetchUsuarios = async () => {
-  await axios.get(`${API_URL_USUARIOS}/getall`).then((res) => {
-    usuarios.value = res.data;
-    loading.value = false;
-  });
-}
-
 onMounted(() => {
-  fetch();
-  fetchUsuarios();
+  fetchAll();
 });
 </script>

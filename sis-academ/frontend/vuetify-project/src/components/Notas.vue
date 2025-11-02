@@ -12,8 +12,8 @@
     <template v-slot:top>
       <v-toolbar flat class="rounded">
         <v-toolbar-title>
-          <v-icon start>mdi-format-list-checkbox</v-icon>
-          Gestión de Actividades
+          <v-icon start>mdi-numeric-5-box-multiple</v-icon>
+          Gestión de Notas
         </v-toolbar-title>
         <v-text-field
           v-model="search"
@@ -24,7 +24,7 @@
           single-line
         ></v-text-field>
         <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
-          Agregar una Actividad
+          Agregar una Nota
         </v-btn>
         <v-btn
           class="me-2"
@@ -33,9 +33,17 @@
           @click="handleConfirm"
           :disabled="selected.length === 0"
         >
-          Eliminar Actividades
+          Eliminar Notas
         </v-btn>
       </v-toolbar>
+    </template>
+    
+    <template v-slot:item.calificacion="{ item }">
+      <v-chip v-if="item.calificacion <= 1.0" color="red">{{ item.calificacion }}</v-chip>
+      <v-chip v-if="item.calificacion <= 2.0 && item.calificacion > 1.0" color="deep-orange">{{ item.calificacion }}</v-chip>
+      <v-chip v-if="item.calificacion <= 3.0 && item.calificacion > 2.0" color="yellow">{{ item.calificacion }}</v-chip>
+      <v-chip v-if="item.calificacion <= 4.0 && item.calificacion > 3.0" color="blue">{{ item.calificacion }}</v-chip>
+      <v-chip v-if="item.calificacion <= 5.0 && item.calificacion > 4.0" color="green">{{ item.calificacion }}</v-chip>
     </template>
 
     <template v-slot:item.acciones="{ item }">
@@ -51,42 +59,57 @@
           color="red"
           icon="mdi-delete"
           size="small"
-          @click="handleConfirm(item.idActividad)"
+          @click="handleConfirm(item.idNota)"
         ></v-icon>
       </div>
     </template>
   </v-data-table>
 
   <v-dialog v-model="dialog" max-width="500">
-    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} una Actividad`">
+    <v-card class="pb-5 pl-5 pr-5" :title="`${editing ? 'Editar' : 'Agregar'} una Nota`">
       
       <v-form @submit.prevent="handleSubmit">
         
         <v-select
-          v-model="record.idMateria"
-          label="Materia"
-          :items="materias"
+          v-model="record.idActividad"
+          label="Actividad"
+          :items="actividades"
           item-title="nombre"
-          item-value="idMateria"
+          item-value="idActividad"
         ></v-select>
-        <v-text-field
-          v-model="record.nombre"
-          label="Nombre de la Actividad"
-          :rules="[rules.required]"
-        ></v-text-field>
-        <v-text-field
-          v-model="record.descripcion"
-          label="Descripción de la Actividad"
-          :rules="[rules.required]"
-        ></v-text-field>
+        <v-select
+          v-model="record.idEstudiante"
+          label="Estudiante"
+          :items="estudiantes"
+          item-title="docIdentidad"
+          item-value="idUsuario"
+        ></v-select>
+        <v-select
+          v-model="record.idPeriodo"
+          label="Periodo Académico"
+          :items="periodos"
+          item-title="nombre"
+          item-value="idPeriodo"
+        ></v-select>
         <v-number-input
-          v-model="record.porcentaje"
-          label="Porcentaje"
+          v-model="record.calificacion"
+          label="Calificacion"
           :rules="[rules.required]"
-          :min="0"
-          :max="100"
-          suffix="%"
+          :min="0.0"
+          :max="5.0"
+          precision="1"
         ></v-number-input>
+        <v-text-field
+          v-model="record.observacion"
+          label="Observaciones"
+        ></v-text-field>
+        <v-select
+          v-model="record.tipo"
+          label="Tipo"
+          :items="tipos"
+          item-title="value"
+          item-value="value"
+        ></v-select>
         
         <v-btn class="mt-2" @click="dialog = false" block>Cancelar</v-btn>
         <v-btn class="mt-2" type="submit" block color="green">Aceptar</v-btn>
@@ -96,7 +119,7 @@
   </v-dialog>
   
   <v-dialog v-model="confirmDialog.enabled" max-width="500">
-    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'la Actividad' : 'todas las Actividades'}?`" 
+    <v-card :title="`¿Eliminar ${selected.length === 0 ? 'la Nota' : 'todas las Notas'}?`" 
       text="¿Confirma que quiere eliminar el/los registro(s)?"
     >
     <template v-slot:prepend>
@@ -119,30 +142,46 @@
 import { ref, onMounted, shallowRef } from "vue";
 import axios from "axios";
 
-const API_URL_MATERIAS = "http://localhost:8080/api/materias";
-const materias = ref([]);
+const API_URL_ACTIVIDADES = "http://localhost:8080/api/actividades";
+const actividades = ref([]);
 
-const API_URL_ACTIVIDADES = "http://localhost:8080/api/actividades"
+const API_URL_ESTUDIANTES = "http://localhost:8080/api/usuarios/usuarios";
+const estudiantes = ref([]);
+
+const API_URL_PERIODOS = "http://localhost:8080/api/horarios/periodos-academicos";
+const periodos = ref([]);
+
+const API_URL_NOTAS = "http://localhost:8080/api/notas"
 const items = ref([]);
 const loading = ref(true);
 const selected = ref([]);
 const headers = [
-  { title: "ID", key: "idActividad" },
-  // { title: "ID Materia", key: "idMateria" },
-  { title: "Materia", key: "nombreMateria" },
-  { title: "Nombre", key: "nombre" },
-  { title: "Descripción", key: "descripcion" },
-  { title: "Porcentaje (%)", key: "porcentaje" },
+  { title: "ID", key: "idNota" },
+  // { title: "ID Actividad", key: "idActividad" },
+  { title: "Actividad", key: "nombreActividad" },
+  // { title: "ID Estudiante", key: "idEstudiante" },
+  { title: "Estudiante", key: "docEstudiante" },
+  // { title: "ID Periodo", key: "idPeriodo" },
+  { title: "Periodo", key: "nombrePeriodo" },
+  { title: "Calificación", key: "calificacion" },
+  { title: "Observaciones", key: "observacion" },
+  { title: "Tipo", key: "tipo" },
   { title: "Acciones", key: "acciones" },
 ];
 const FORM_DATA = {
+  idNota: null,
   idActividad: null,
-  idMateria: null,
-  nombre: "",
-  descripcion: "",
-  porcentaje: null
+  idEstudiante: null,
+  idPeriodo: null,
+  calificacion: null,
+  observacion: null,
+  tipo: "",
 };
 const search = ref('');
+const tipos = ref([
+  {value: 'Normal'},
+  {value: 'Recuperación'}
+]);
 
 const snackbar = ref(false);
 const snackbarColor = ref("success");
@@ -180,7 +219,7 @@ function edit(item) {
 
 async function remove(id) {
   await axios
-    .delete(`${API_URL_MATERIAS}/delete/${id}`)
+    .delete(`${API_URL_NOTAS}/delete/${id}`)
     .then((res) => {
       showSnackbar(res.data);
     })
@@ -197,14 +236,14 @@ async function removeSelected() {
 
   try {
     await Promise.all(
-      selected.value.map((actividad) =>
-        axios.delete(`${API_URL_ACTIVIDADES}/delete/${actividad.idActividad}`)
+      selected.value.map((nota) =>
+        axios.delete(`${API_URL_NOTAS}/delete/${nota.idNota}`)
       )
     );
-    showSnackbar("Actividades eliminadas correctamente");
+    showSnackbar("Notas eliminadas correctamente");
     selected.value = [];
   } catch (error) {
-    showSnackbar("Error al eliminar las actividades", "error");
+    showSnackbar("Error al eliminar las notas", "error");
   }
   fetchAll();
   confirmDialog.value.enabled = false;
@@ -214,7 +253,7 @@ async function removeSelected() {
 async function save() {
   if (editing.value) {
     await axios
-      .put(`${API_URL_ACTIVIDADES}/update/${record.value.idActividad}`, record.value)
+      .put(`${API_URL_NOTAS}/update/${record.value.idNota}`, record.value)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -224,7 +263,7 @@ async function save() {
       });
   } else {
     await axios
-      .post(`${API_URL_ACTIVIDADES}/create`, record.value)
+      .post(`${API_URL_NOTAS}/create`, record.value)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -244,10 +283,7 @@ function handleConfirm(id) {
 function handleSubmit(e) {
   valid.value = true;
   console.log(e)
-  if (e.target[0].value === "") valid.value = false;
-  if (e.target[1].value === "") valid.value = false;
-  if (e.target[2].value === "") valid.value = false;
-  if (e.target[4].value === "") valid.value = false;
+  if (e.target[3].value === "") valid.value = false;
   
   if (valid.value) {
     save();
@@ -260,16 +296,24 @@ function handleSubmit(e) {
 
 const fetchAll = async () => {
   Promise.all([
-    axios.get(`${API_URL_MATERIAS}/getall`),
-    axios.get(`${API_URL_ACTIVIDADES}/getall`)
-  ]).then(([materiasRes, actividadesRes]) => {
-    materias.value = materiasRes.data;
+    axios.get(`${API_URL_ACTIVIDADES}/getall`),
+    axios.get(`${API_URL_ESTUDIANTES}/getall`),
+    axios.get(`${API_URL_PERIODOS}/getall`),
+    axios.get(`${API_URL_NOTAS}/getall`)
+  ]).then(([actividadesRes, estudiantesRes, periodosRes, notasRes]) => {
+    actividades.value = actividadesRes.data;
+    estudiantes.value = estudiantesRes.data;
+    periodos.value = periodosRes.data;
     
-    items.value = actividadesRes.data.map(item => {
-      const materia = materias.value.find(m => m.idMateria === item.idMateria);
+    items.value = notasRes.data.map(item => {
+      const actividad = actividades.value.find(a => a.idActividad === item.idActividad);
+      const estudiante = estudiantes.value.find(e => e.idUsuario === item.idEstudiante);
+      const periodo = periodos.value.find(p => p.idPeriodo === item.idPeriodo);
       return {
         ...item,
-        nombreMateria: materia ? materia.nombre : '...'
+        nombreActividad: actividad ? actividad.nombre : '...',
+        docEstudiante: estudiante ? estudiante.docIdentidad : '...',
+        nombrePeriodo: periodo ? periodo.nombre : '...'
       }
     });
     
