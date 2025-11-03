@@ -4,6 +4,8 @@ Repositorio para el Sistema de Gestión Académica para el colegio 'Camino al Sa
 
 ## ¿Cómo correr el proyecto?
 
+### Backend
+
 1. En la terminal ubicarse en el directorio `/backend`, tipo así:
    - `cd C:\Users\<su-nombre-usuario>\OneDrive\Documents\GitHub\IS2_SisAcadem\sis-academ\backend`
    - La dirección no necesariamente tiene que ser esa.
@@ -24,6 +26,29 @@ Repositorio para el Sistema de Gestión Académica para el colegio 'Camino al Sa
         - `http://localhost:8080/api/asistencias/getall`
         - etc...
 
+### Frontend
+
+1. En la terminal ubicarse en el directorio `/frontend/vuetify-project`, tipo así:
+   - `cd C:\Users\<su-nombre-usuario>\OneDrive\Documents\GitHub\IS2_SisAcadem\sis-academ\frontend\vuetify-project`
+   - La dirección no necesariamente tiene que ser esa.
+  
+2. Ejecutar el comando de NPM para instalar todos los paquetes necesarios.
+   - `npm install`
+  
+3. Ejecutar el comando de NPM para correr la aplicación Vite.
+   - `npm run dev`
+  
+4. Ahora se puede acceder desde el navegador al aplicativo, así:
+   - `http://localhost:3000`
+   - Ingresar utilizando cualquiera de los siguientes credenciales para cada rol:
+      -  ADMINISTRADOR (Usuario: admin, Contraseña: admin)
+      -  DOCENTE 1 (Usuario: adoe, Contraseña: teachpass123)
+      -  DOCENTE 2 (Usuario: bsmith, Contraseña: teachpass456)
+      -  ACUDIENTE 1 (Usuario: jgarcia, Contraseña: parent101)
+      -  ACUDIENTE 2 (Usuario: mfernandez, Contraseña: parent102)
+      -  ESTUDIANTE 1 (Usuario: sgarcia, Contraseña: student201)
+      -  ESTUDIANTE 2 (Usuario: dfernandez, Contraseña: student202)
+
 ## ¿Cómo acceder a cada servicio/contenedor?
 
 Cada contenedor tiene un puerto por donde recibe/envia información.
@@ -31,6 +56,9 @@ Cada contenedor tiene un puerto por donde recibe/envia información.
 <table>
     <tr>
         <th>Item</th><th>Nombre Contenedor</th><th>Puerto</th><th>Base de Datos</th><th>API Endpoint</th>
+    </tr>
+    <tr>
+        <td>Servidor Frontend</td><td>-</td><td>3000</td><td>-</td><td>-</td>
     </tr>
     <tr>
         <td>Servidor MySQL</td><td>mysql-db</td><td>3306</td><td>-</td><td>-</td>
