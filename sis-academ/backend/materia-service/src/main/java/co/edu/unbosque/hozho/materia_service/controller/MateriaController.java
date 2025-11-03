@@ -41,7 +41,6 @@ public class MateriaController {
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Materia materia){
         int status = materiaService.updateById(id, materia);
         if (status == 1) return new ResponseEntity<>("No existe una materia con ese ID", HttpStatus.NOT_FOUND);
-        else if (status == 2) return new ResponseEntity<>("Ya existe una materia con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 
         return new ResponseEntity<>("Materia actualizada exitosamente", HttpStatus.OK);
     }

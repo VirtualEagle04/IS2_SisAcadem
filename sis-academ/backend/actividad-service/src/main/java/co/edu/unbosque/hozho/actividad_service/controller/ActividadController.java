@@ -40,7 +40,6 @@ public class ActividadController {
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Actividad actividad){
         int status = actividadService.updateById(id, actividad);
         if (status == 1) return new ResponseEntity<>("No existe una actividad con ese ID", HttpStatus.NOT_FOUND);
-        else if (status == 2) return new ResponseEntity<>("Ya existe una actividad con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 
         return new ResponseEntity<>("Actividad actualizada exitosamente", HttpStatus.OK);
     }

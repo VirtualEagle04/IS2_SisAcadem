@@ -23,7 +23,7 @@ public class CursoController {
     public ResponseEntity<String> create(@RequestBody Curso curso){
         int status = cursoServ.create(curso);
         if (status == 1) return new ResponseEntity<String>("No se debe proporcionar un ID al crear un curso", HttpStatus.NOT_ACCEPTABLE);
-        else if (status == 2) return new ResponseEntity<String>("Ya existe un Grado con ese nombre de curso", HttpStatus.NOT_ACCEPTABLE);
+        else if (status == 2) return new ResponseEntity<String>("Ya existe un Curso con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 
         return new ResponseEntity<String>("Curso creado exitosamente", HttpStatus.CREATED);
     }
