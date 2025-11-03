@@ -37,27 +37,27 @@ public class UsuarioService implements CRUDOperations<Usuario>{
     @Override
     public int updateById(Long id, Usuario data) {
         Optional<Usuario> found = usuarioRepo.findById(id);
-        if (found.isPresent()) {
-            Usuario u = found.get();
-            u.setIdRol(data.getIdRol());
-            u.setUsuario(data.getUsuario());
-            u.setClave(data.getClave());
-            u.setNombres(data.getNombres());
-            u.setApellidos(data.getApellidos());
-            u.setFechaNacimiento(data.getFechaNacimiento());
-            u.setEdad(data.getEdad());
-            u.setSexo(data.getSexo());
-            u.setDocIdentidad(data.getDocIdentidad());
-            u.setCiudadNacimiento(data.getCiudadNacimiento());
-            u.setTelefono(data.getTelefono());
-            u.setCorreo(data.getCorreo());
-            u.setFechaRegistro(data.getFechaRegistro());
-            u.setActivo(data.isActivo());
+        if (found.isEmpty()) return 1; // No existe un usuario con ese ID
+        else if (usuarioRepo.existsByUsuario(data.getUsuario())) return 2; // Ya existe un usuario con ese nombre de usuario
 
-            usuarioRepo.save(u);
-            return 0;
-        }
-        return 1; // No existe un usuario con ese ID
+        Usuario u = found.get();
+        u.setIdRol(data.getIdRol());
+        u.setUsuario(data.getUsuario());
+        u.setClave(data.getClave());
+        u.setNombres(data.getNombres());
+        u.setApellidos(data.getApellidos());
+        u.setFechaNacimiento(data.getFechaNacimiento());
+        u.setEdad(data.getEdad());
+        u.setSexo(data.getSexo());
+        u.setDocIdentidad(data.getDocIdentidad());
+        u.setCiudadNacimiento(data.getCiudadNacimiento());
+        u.setTelefono(data.getTelefono());
+        u.setCorreo(data.getCorreo());
+        u.setFechaRegistro(data.getFechaRegistro());
+        u.setActivo(data.isActivo());
+
+        usuarioRepo.save(u);
+        return 0;
     }
 
     @Override

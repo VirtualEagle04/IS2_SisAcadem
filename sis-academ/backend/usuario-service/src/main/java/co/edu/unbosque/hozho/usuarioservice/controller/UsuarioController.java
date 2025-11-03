@@ -41,6 +41,7 @@ public class UsuarioController {
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Usuario usuario) {
         int status = usuarioServ.updateById(id, usuario);
         if (status == 1) return new ResponseEntity<>("No existe un usuario con ese ID", HttpStatus.NOT_FOUND);
+        else if (status == 2) return new ResponseEntity<>("Ya existe un usuario con ese nombre de usuario", HttpStatus.NOT_ACCEPTABLE);
 
         return new ResponseEntity<>("Usuario actualizado exitosamente", HttpStatus.OK);
     }

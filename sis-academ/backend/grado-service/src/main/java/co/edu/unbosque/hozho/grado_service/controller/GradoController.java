@@ -41,6 +41,7 @@ public class GradoController {
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Grado grado){
         int status = gradoServ.updateById(id, grado);
         if (status == 1) return new ResponseEntity<String>("No existe un Grado con ese ID", HttpStatus.NOT_FOUND);
+        else if (status == 2) return new ResponseEntity<String>("Ya existe un Grado con ese nombre de grado", HttpStatus.NOT_ACCEPTABLE);
 
         return new ResponseEntity<String>("Grado actualizado exitosamente", HttpStatus.OK);
     }

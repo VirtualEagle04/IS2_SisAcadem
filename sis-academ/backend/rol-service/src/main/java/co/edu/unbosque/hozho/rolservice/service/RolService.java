@@ -50,24 +50,24 @@ public class RolService implements CRUDOperations<Rol>{
     @Override
     public int updateById(Long id, Rol data) {
         Optional<Rol> found = rolRepo.findById(id);
-        if (found.isPresent()) {
-            Rol r = found.get();
-            r.setNombre(data.getNombre());
-            r.setSoloLectura(data.isSoloLectura());
-            r.setRol(data.isRol());
-            r.setUsuario(data.isUsuario());
-            r.setGrado(data.isGrado());
-            r.setCurso(data.isCurso());
-            r.setMateria(data.isMateria());
-            r.setActividad(data.isActividad());
-            r.setHorario(data.isHorario());
-            r.setNota(data.isNota());
-            r.setAsistencia(data.isAsistencia());
-            r.setMatricula(data.isMatricula());
+        if (found.isEmpty()) return 1; // No existe un rol con ese ID
+        else if (rolRepo.existsByNombre(data.getNombre())) return 2; // Ya existe un rol con ese nombre
 
-            rolRepo.save(r);
-            return 0;
-        }
-        return 1; // No existe un rol con ese ID
+        Rol r = found.get();
+        r.setNombre(data.getNombre());
+        r.setSoloLectura(data.isSoloLectura());
+        r.setRol(data.isRol());
+        r.setUsuario(data.isUsuario());
+        r.setGrado(data.isGrado());
+        r.setCurso(data.isCurso());
+        r.setMateria(data.isMateria());
+        r.setActividad(data.isActividad());
+        r.setHorario(data.isHorario());
+        r.setNota(data.isNota());
+        r.setAsistencia(data.isAsistencia());
+        r.setMatricula(data.isMatricula());
+
+        rolRepo.save(r);
+        return 0;
     }
 }
