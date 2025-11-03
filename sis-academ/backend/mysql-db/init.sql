@@ -76,34 +76,34 @@ CREATE TABLE IF NOT EXISTS usuario(
 INSERT INTO usuario (id_rol, usuario, clave, nombres, apellidos, fecha_nacimiento, edad, sexo, doc_identidad, ciudad_nacimiento, telefono, correo)
 VALUES
 -- ADMINISTRADOR
-(1, 'admin', 'admin', 'ADMIN', 'ADMIN', '2000-01-01', 25, 'M', 1234567890, 'Bogota', '3003344556', 'admin@ejemplo.com'),
+(1, 'admin', '$2b$10$6qXhAS.1NoGFOXNMtWwfMOdvlwi0xlJkXzlhq1iH/kcv3WRjbVCzK', 'ADMIN', 'ADMIN', '2000-01-01', 25, 'M', 1234567890, 'Bogota', '3003344556', 'admin@ejemplo.com'),
 -- DOCENTES
-(3, 'adoe', 'teachpass123', 'Alice', 'Doe', '1980-03-10', 43, 'F', 1122334451, 'Cali', '3001122334', 'adoe@ejemplo.com'),
-(3, 'bsmith', 'teachpass456', 'Bob', 'Smith', '1975-07-25', 48, 'M', 5566778892, 'Barranquilla', '3005566778', 'bsmith@ejemplo.com'),
-(3, 'cgonzalez', 'teach789', 'Carlos', 'González', '1982-06-15', 41, 'M', 1122334452, 'Bogotá', '3101234567', 'cgonzalez@ejemplo.com'),
-(3, 'lmartinez', 'teach321', 'Laura', 'Martínez', '1985-09-22', 38, 'F', 2233445564, 'Medellín', '3112345678', 'lmartinez@ejemplo.com'),
-(3, 'prodriguez', 'teach654', 'Pedro', 'Rodríguez', '1978-12-05', 45, 'M', 3344556675, 'Cali', '3123456789', 'prodriguez@ejemplo.com'),
-(3, 'mlopez', 'teach987', 'María', 'López', '1983-04-18', 40, 'F', 4455667786, 'Cartagena', '3134567890', 'mlopez@ejemplo.com'),
-(3, 'jramirez', 'teach147', 'Jorge', 'Ramírez', '1981-08-30', 42, 'M', 5566778897, 'Bucaramanga', '3145678901', 'jramirez@ejemplo.com'),
-(3, 'aherrera', 'teach258', 'Ana', 'Herrera', '1986-11-12', 37, 'F', 6677889908, 'Pereira', '3156789012', 'aherrera@ejemplo.com'),
-(3, 'fcastro', 'teach369', 'Fernando', 'Castro', '1979-02-28', 44, 'M', 7788990019, 'Barranquilla', '3167890123', 'fcastro@ejemplo.com'),
-(3, 'smoreno', 'teach741', 'Sandra', 'Moreno', '1984-07-14', 39, 'F', 8899001120, 'Manizales', '3178901234', 'smoreno@ejemplo.com'),
-(3, 'rmendez', 'teach852', 'Ricardo', 'Méndez', '1980-10-25', 43, 'M', 9900112231, 'Cúcuta', '3189012345', 'rmendez@ejemplo.com'),
-(3, 'nvega', 'teach963', 'Natalia', 'Vega', '1987-03-08', 36, 'F', 1011223342, 'Santa Marta', '3190123456', 'nvega@ejemplo.com'),
+(3, 'adoe', '$2b$10$1JSFlj9SKBLikfxFqRein.6jpfWT15cf.XUE0QLUGXRCiJlmz0Y0W', 'Alice', 'Doe', '1980-03-10', 43, 'F', 1122334451, 'Cali', '3001122334', 'adoe@ejemplo.com'),
+(3, 'bsmith', '$2b$10$0tCvZv.ZWvcWTrMHj0clE.N16cbi8wrZm3Fv6eNvBcHMEtYWbpm.W', 'Bob', 'Smith', '1975-07-25', 48, 'M', 5566778892, 'Barranquilla', '3005566778', 'bsmith@ejemplo.com'),
+(3, 'cgonzalez', '$2b$10$sRUSWtsMf7igkkBOdoTZV.o3EGQBeHb9jeGvgxQ4FFS6qv/jXz5ia', 'Carlos', 'González', '1982-06-15', 41, 'M', 1122334452, 'Bogotá', '3101234567', 'cgonzalez@ejemplo.com'),
+(3, 'lmartinez', '$2b$10$B0ch6KKQG8Tr3RYdgzEJJuChCwpHPnY7wIO/vkxnHHIGxyFiJ4.jO', 'Laura', 'Martínez', '1985-09-22', 38, 'F', 2233445564, 'Medellín', '3112345678', 'lmartinez@ejemplo.com'),
+(3, 'prodriguez', '$2b$10$KFFAkRIGegB2IyN49dYRmeXxmev1sWkw7ES9p8kZHnLBKZo6/jm7S', 'Pedro', 'Rodríguez', '1978-12-05', 45, 'M', 3344556675, 'Cali', '3123456789', 'prodriguez@ejemplo.com'),
+(3, 'mlopez', '$2b$10$Sog4H87PvjVAwqM8nTmr/eOk1Suyboid9evx5SJ3yUTEuRFLasijy', 'María', 'López', '1983-04-18', 40, 'F', 4455667786, 'Cartagena', '3134567890', 'mlopez@ejemplo.com'),
+(3, 'jramirez', '$2b$10$AXtUc0Jo.1dvNVGT9mmLQOwn32Qcl0SBAcL3f/1bhwAbQWjUtN7iG', 'Jorge', 'Ramírez', '1981-08-30', 42, 'M', 5566778897, 'Bucaramanga', '3145678901', 'jramirez@ejemplo.com'),
+(3, 'aherrera', '$2b$10$TSYM5VLBgoPlxbF/CNBK2O6oBvvnfmCE4fl93FsZ8wR5a.qZCsyIS', 'Ana', 'Herrera', '1986-11-12', 37, 'F', 6677889908, 'Pereira', '3156789012', 'aherrera@ejemplo.com'),
+(3, 'fcastro', '$2b$10$jWiJ4xCKrpPNVue3yJ1pOu7JDXIL7.9eUsAOWcgzLXsescA63MA22', 'Fernando', 'Castro', '1979-02-28', 44, 'M', 7788990019, 'Barranquilla', '3167890123', 'fcastro@ejemplo.com'),
+(3, 'smoreno', '$2b$10$bJZ0W76WLyRnRLMrEuArzOXl9xdC1rKfZeQ/6FfkXy//StLQNYqcG', 'Sandra', 'Moreno', '1984-07-14', 39, 'F', 8899001120, 'Manizales', '3178901234', 'smoreno@ejemplo.com'),
+(3, 'rmendez', '$2b$10$/3h3Qu45al1sBQQtWPVuQ.Aa2I31LFvipU5yUlouK/w6Pk1EtuljK', 'Ricardo', 'Méndez', '1980-10-25', 43, 'M', 9900112231, 'Cúcuta', '3189012345', 'rmendez@ejemplo.com'),
+(3, 'nvega', '$2b$10$4LOUInQBIZdw8qQIJm2YF.rJjyXE7aSXRNEoAe1QvSzCr9Ewiz/n6', 'Natalia', 'Vega', '1987-03-08', 36, 'F', 1011223342, 'Santa Marta', '3190123456', 'nvega@ejemplo.com'),
 -- ACUDIENTES
-(4, 'jgarcia', 'parent101', 'Juan', 'García', '1975-05-20', 48, 'M', 1122334453, 'Bogotá', '3201234567', 'jgarcia@ejemplo.com'),
-(4, 'mfernandez', 'parent102', 'Martha', 'Fernández', '1977-08-15', 46, 'F', 2233445565, 'Medellín', '3212345678', 'mfernandez@ejemplo.com'),
-(4, 'lsanchez', 'parent103', 'Luis', 'Sánchez', '1973-11-30', 50, 'M', 3344556676, 'Cali', '3223456789', 'lsanchez@ejemplo.com'),
-(4, 'cdiaz', 'parent104', 'Carolina', 'Díaz', '1976-02-14', 47, 'F', 4455667787, 'Cartagena', '3234567890', 'cdiaz@ejemplo.com'),
-(4, 'atorre', 'parent105', 'Andrés', 'Torres', '1974-06-22', 49, 'M', 5566778898, 'Bucaramanga', '3245678901', 'atorre@ejemplo.com'),
-(4, 'pruiz', 'parent106', 'Patricia', 'Ruiz', '1978-09-10', 45, 'F', 6677889909, 'Pereira', '3256789012', 'pruiz@ejemplo.com'),
+(4, 'jgarcia', '$2b$10$Acz0H2xenHAueTNPn2nOTO8F6fTAhFKqmLrc19IY1J.HN2.28rsJO', 'Juan', 'García', '1975-05-20', 48, 'M', 1122334453, 'Bogotá', '3201234567', 'jgarcia@ejemplo.com'),
+(4, 'mfernandez', '$2b$10$fR218IFt3Y6T7ynfZISgyOwRrvnAUXW54MVh1aaDysqXtm4FxG/V.', 'Martha', 'Fernández', '1977-08-15', 46, 'F', 2233445565, 'Medellín', '3212345678', 'mfernandez@ejemplo.com'),
+(4, 'lsanchez', '$2b$10$Gks41i1UM5wsKU97pekasu7MW77GeWMdbmliu0pyYY6.dKdIoh1Mq', 'Luis', 'Sánchez', '1973-11-30', 50, 'M', 3344556676, 'Cali', '3223456789', 'lsanchez@ejemplo.com'),
+(4, 'cdiaz', '$2b$10$32TyKHLaupsGEQgWIUdegeRx3/gCH856MTF0t.Y65T8kF7faX7xqq', 'Carolina', 'Díaz', '1976-02-14', 47, 'F', 4455667787, 'Cartagena', '3234567890', 'cdiaz@ejemplo.com'),
+(4, 'atorre', '$2b$10$Yzv2INETj1C5aGXIUxxJLuWbxlgj3XgCSN87Z4feQ8/omlsmiT4di', 'Andrés', 'Torres', '1974-06-22', 49, 'M', 5566778898, 'Bucaramanga', '3245678901', 'atorre@ejemplo.com'),
+(4, 'pruiz', '$2b$10$5I7YYLgdB/W72RyUuLXBvOLKJlTcM.MxuwJX2AuFJOuJ9dQPMWIE.', 'Patricia', 'Ruiz', '1978-09-10', 45, 'F', 6677889909, 'Pereira', '3256789012', 'pruiz@ejemplo.com'),
 -- ESTUDIANTES PRIMERO DE PRIMARIA
-(5, 'sgarcia', 'student201', 'Sofía', 'García', '2018-03-15', 6, 'F', 1001234567, 'Bogotá', '3401234567', 'sgarcia@ejemplo.com'),
-(5, 'dfernandez', 'student202', 'Daniel', 'Fernández', '2018-05-20', 6, 'M', 1002345678, 'Medellín', '3402345678', 'dfernandez@ejemplo.com'),
-(5, 'lusanchez', 'student203', 'Luna', 'Sánchez', '2018-07-10', 6, 'F', 1003456789, 'Cali', '3403456789', 'lusanchez@ejemplo.com'),
-(5, 'mdiaz', 'student204', 'Mateo', 'Díaz', '2018-09-25', 6, 'M', 1004567890, 'Cartagena', '3404567890', 'mdiaz@ejemplo.com'),
-(5, 'vrodriguez', 'student221', 'Victoria', 'Rodríguez', '2018-02-10', 6, 'F', 1021234567, 'Cali', '3421234567', 'vrodriguez@ejemplo.com'),
-(5, 'eramirez', 'student222', 'Emilio', 'Ramírez', '2018-04-15', 6, 'M', 1022345678, 'Cartagena', '3422345678', 'eramirez@ejemplo.com');
+(5, 'sgarcia', '$2b$10$vh8QbZ.ICmeFZPZYB//5Kemvj2FoIU1yP9PiL2UuIBfjyLHixDfoi', 'Sofía', 'García', '2018-03-15', 6, 'F', 1001234567, 'Bogotá', '3401234567', 'sgarcia@ejemplo.com'),
+(5, 'dfernandez', '$2b$10$M.19vzxOWZ.8aRZ6XwRidOTOEf3P1HHcxSZ4oa9ryee0AYZwpo8DW', 'Daniel', 'Fernández', '2018-05-20', 6, 'M', 1002345678, 'Medellín', '3402345678', 'dfernandez@ejemplo.com'),
+(5, 'lusanchez', '$2b$10$Xjeps/iC/v0YcztMNUlrvedB5Z2r.L4uGU3osELedtNYCsKXu8Pa6', 'Luna', 'Sánchez', '2018-07-10', 6, 'F', 1003456789, 'Cali', '3403456789', 'lusanchez@ejemplo.com'),
+(5, 'mdiaz', '$2b$10$iXdo3lynxM1sWNFB24CYeusnDb.p6RQ5TQYHA0wwm/J0UllPPf2Ae', 'Mateo', 'Díaz', '2018-09-25', 6, 'M', 1004567890, 'Cartagena', '3404567890', 'mdiaz@ejemplo.com'),
+(5, 'vrodriguez', '$2b$10$uvXldQxxQMQuSa/bo/qoC.Jc2ElriRirbpZyhYkRJhbOrNK.V3/di', 'Victoria', 'Rodríguez', '2018-02-10', 6, 'F', 1021234567, 'Cali', '3421234567', 'vrodriguez@ejemplo.com'),
+(5, 'eramirez', '$2b$10$L8pjAhl/eMo1FhWrLcVPFuDDnw9eiT3IDsGZcANg1C3EkEfqH4oi2', 'Emilio', 'Ramírez', '2018-04-15', 6, 'M', 1022345678, 'Cartagena', '3422345678', 'eramirez@ejemplo.com');
 
 
 

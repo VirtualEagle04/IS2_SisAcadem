@@ -8,6 +8,7 @@
     v-model="selected"
     show-select
     :search="search"
+    :show-select="!soloLectura"
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
@@ -23,10 +24,11 @@
           hide-details
           single-line
         ></v-text-field>
-        <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
+        <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
           Agregar una Nota
         </v-btn>
         <v-btn
+          v-if="!soloLectura"
           class="me-2"
           prepend-icon="mdi-delete"
           color="red"
@@ -49,6 +51,7 @@
     <template v-slot:item.acciones="{ item }">
       <div class="d-flex ga-2">
         <v-icon
+          v-if="!soloLectura"
           color="blue"
           icon="mdi-pencil"
           size="small"
@@ -56,6 +59,7 @@
         ></v-icon>
 
         <v-icon
+          v-if="!soloLectura"
           color="red"
           icon="mdi-delete"
           size="small"
@@ -139,14 +143,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted, shallowRef } from "vue";
+import { ref, onMounted, shallowRef, computed } from "vue";
 import axios from "axios";
+
+const userData = ref(null);
+const soloLectura = computed(() => {
+  if (!userData.value) return false;
+  return userData.value.permisos?.soloLectura || false;
+});
+
+const API_URL_MATERIAS = "http://localhost:8080/api/materias";
+const materias = ref([]);
 
 const API_URL_ACTIVIDADES = "http://localhost:8080/api/actividades";
 const actividades = ref([]);
 
 const API_URL_ESTUDIANTES = "http://localhost:8080/api/usuarios/usuarios";
 const estudiantes = ref([]);
+
+const API_URL_ESTUDIANTES_DETALLES = "http://localhost:8080/api/usuarios/estudiantes-detalles";
+const estudiantesDetalles = ref([]);
 
 const API_URL_PERIODOS = "http://localhost:8080/api/horarios/periodos-academicos";
 const periodos = ref([]);
@@ -299,11 +315,15 @@ const fetchAll = async () => {
     axios.get(`${API_URL_ACTIVIDADES}/getall`),
     axios.get(`${API_URL_ESTUDIANTES}/getall`),
     axios.get(`${API_URL_PERIODOS}/getall`),
-    axios.get(`${API_URL_NOTAS}/getall`)
-  ]).then(([actividadesRes, estudiantesRes, periodosRes, notasRes]) => {
+    axios.get(`${API_URL_NOTAS}/getall`),
+    axios.get(`${API_URL_MATERIAS}/getall`),
+    axios.get(`${API_URL_ESTUDIANTES_DETALLES}/getall`)
+  ]).then(([actividadesRes, estudiantesRes, periodosRes, notasRes, materiasRes, estudiantesDetallesRes]) => {
     actividades.value = actividadesRes.data;
     estudiantes.value = estudiantesRes.data;
     periodos.value = periodosRes.data;
+    materias.value = materiasRes.data;
+    estudiantesDetalles.value = estudiantesDetallesRes.data;
     
     items.value = notasRes.data.map(item => {
       const actividad = actividades.value.find(a => a.idActividad === item.idActividad);
@@ -317,11 +337,32 @@ const fetchAll = async () => {
       }
     });
     
+    if (userData.value.idRol === 3) { // Docente
+      const materia = materias.value.find(item => item.idDocente === userData.value.idUsuario);
+      const actividadesFiltradas = actividades.value.filter(item => item.idMateria === materia.idMateria);
+      items.value = items.value.filter(item => 
+        actividadesFiltradas.some(a => a.idActividad === item.idActividad)
+      );
+      
+      actividades.value = actividades.value.filter(item => item.idMateria === materia.idMateria);
+      
+    } else if (userData.value.idRol === 4) { // Acudiente
+      const estudiante = estudiantesDetalles.value.find(item => item.idAcudiente === userData.value.idUsuario);
+      items.value = items.value.filter(item => item.idEstudiante === estudiante.idUsuario);
+      
+    } else if (userData.value.idRol === 5) { // Estudiante
+      items.value = items.value.filter(item => item.idEstudiante === userData.value.idUsuario);
+    }
+    
     loading.value = false;
   });
 };
 
 onMounted(() => {
   fetchAll();
+  const saved = localStorage.getItem('userData');
+  if (saved) {
+    userData.value = JSON.parse(saved);
+  }
 });
 </script>

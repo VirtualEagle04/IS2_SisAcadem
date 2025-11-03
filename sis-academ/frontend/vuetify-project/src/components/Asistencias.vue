@@ -8,6 +8,7 @@
     v-model="selected"
     show-select
     :search="search"
+    :show-select="!soloLectura"
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
@@ -23,10 +24,11 @@
           hide-details
           single-line
         ></v-text-field>
-        <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
+        <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
           Agregar una Asistencia
         </v-btn>
         <v-btn
+          v-if="!soloLectura"
           class="me-2"
           prepend-icon="mdi-delete"
           color="red"
@@ -48,6 +50,7 @@
     <template v-slot:item.acciones="{ item }">
       <div class="d-flex ga-2">
         <v-icon
+          v-if="!soloLectura"
           color="blue"
           icon="mdi-pencil"
           size="small"
@@ -55,6 +58,7 @@
         ></v-icon>
 
         <v-icon
+          v-if="!soloLectura"
           color="red"
           icon="mdi-delete"
           size="small"
@@ -123,8 +127,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, shallowRef } from "vue";
+import { ref, onMounted, shallowRef, computed } from "vue";
 import axios from "axios";
+
+const userData = ref(null);
+const soloLectura = computed(() => {
+  if (!userData.value) return false;
+  return userData.value.permisos?.soloLectura || false;
+});
 
 const API_URL_ESTUDIANTES = "http://localhost:8080/api/usuarios/usuarios";
 const estudiantes = ref([]);
@@ -286,6 +296,8 @@ const fetchAll = async () => {
   ]).then(([estudiantesRes, materiasRes, horariosRes, asistenciasRes]) => {
     estudiantes.value = estudiantesRes.data;
     materias.value = materiasRes.data;
+    const clases = ref([]);
+    clases.value = horariosRes.data;
     
     horariosClases.value = horariosRes.data.map(item => {
       const nombreMateria = materias.value.find(m => m.idMateria === item.idMateria);
@@ -306,11 +318,26 @@ const fetchAll = async () => {
       }
     });
     
+    if (userData.value.idRol === 3) {
+      const materia = materias.value.find(item => item.idDocente === userData.value.idUsuario);
+      horariosClases.value = horariosClases.value.filter(item => item.idMateria === materia.idMateria);
+      
+      const clasesFiltradas = clases.value.filter(item => item.idMateria === materia.idMateria);
+      console.log(clasesFiltradas);
+      items.value = items.value.filter(item => 
+        clasesFiltradas.some(c => c.idHorario === item.idClase)
+      );
+    }
+    
     loading.value = false;
   });
 };
 
 onMounted(() => {
   fetchAll();
+  const saved = localStorage.getItem('userData');
+  if (saved) {
+    userData.value = JSON.parse(saved);
+  }
 });
 </script>

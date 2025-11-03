@@ -8,6 +8,7 @@
     v-model="selected"
     show-select
     :search="search"
+    :show-select="!soloLectura"
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
@@ -23,10 +24,11 @@
           hide-details
           single-line
         ></v-text-field>
-        <v-btn class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
+        <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
           Agregar una Materia
         </v-btn>
         <v-btn
+          v-if="!soloLectura"
           class="me-2"
           prepend-icon="mdi-delete"
           color="red"
@@ -41,6 +43,7 @@
     <template v-slot:item.acciones="{ item }">
       <div class="d-flex ga-2">
         <v-icon
+          v-if="!soloLectura"
           color="blue"
           icon="mdi-pencil"
           size="small"
@@ -48,6 +51,7 @@
         ></v-icon>
 
         <v-icon
+          v-if="!soloLectura"
           color="red"
           icon="mdi-delete"
           size="small"
@@ -108,8 +112,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, shallowRef } from "vue";
+import { ref, onMounted, shallowRef, computed } from "vue";
 import axios from "axios";
+
+const userData = ref(null);
+const soloLectura = computed(() => {
+  if (!userData.value) return false;
+  return userData.value.permisos?.soloLectura || false;
+});
 
 const API_URL_USUARIOS = "http://localhost:8080/api/usuarios/usuarios";
 const usuarios = ref([]);
@@ -268,5 +278,9 @@ const fetchAll = async () => {
 
 onMounted(() => {
   fetchAll();
+  const saved = localStorage.getItem('userData');
+  if (saved) {
+    userData.value = JSON.parse(saved);
+  }
 });
 </script>
