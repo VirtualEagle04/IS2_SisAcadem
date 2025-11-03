@@ -51,7 +51,6 @@ public class RolService implements CRUDOperations<Rol>{
     public int updateById(Long id, Rol data) {
         Optional<Rol> found = rolRepo.findById(id);
         if (found.isEmpty()) return 1; // No existe un rol con ese ID
-        else if (rolRepo.existsByNombre(data.getNombre())) return 2; // Ya existe un rol con ese nombre
 
         Rol r = found.get();
         r.setNombre(data.getNombre());

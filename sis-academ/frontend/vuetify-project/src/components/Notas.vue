@@ -9,6 +9,7 @@
     show-select
     :search="search"
     :show-select="!soloLectura"
+    multi-sort
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
@@ -24,6 +25,12 @@
           hide-details
           single-line
         ></v-text-field>
+        <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-file-pdf-box" color="orange" @click="generateBoletines">
+          Generar Boletines
+        </v-btn>
+        <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-calculator" color="gray" @click="handleCalculation">
+          Cálcular Notas Finales
+        </v-btn>
         <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
           Agregar una Nota
         </v-btn>
@@ -46,6 +53,11 @@
       <v-chip v-if="item.calificacion <= 3.0 && item.calificacion > 2.0" color="yellow">{{ item.calificacion }}</v-chip>
       <v-chip v-if="item.calificacion <= 4.0 && item.calificacion > 3.0" color="blue">{{ item.calificacion }}</v-chip>
       <v-chip v-if="item.calificacion <= 5.0 && item.calificacion > 4.0" color="green">{{ item.calificacion }}</v-chip>
+    </template>
+    
+    <template v-slot:item.tipo="{ item }">
+      <v-chip v-if="item.tipo === 'Normal'" color="secondary" variant="tonal">{{ item.tipo }}</v-chip>
+      <v-chip v-if="item.tipo === 'Definitiva'" color="" variant="flat">{{ item.tipo }}</v-chip>
     </template>
 
     <template v-slot:item.acciones="{ item }">
@@ -145,6 +157,8 @@
 <script setup>
 import { ref, onMounted, shallowRef, computed } from "vue";
 import axios from "axios";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const userData = ref(null);
 const soloLectura = computed(() => {
@@ -196,7 +210,7 @@ const FORM_DATA = {
 const search = ref('');
 const tipos = ref([
   {value: 'Normal'},
-  {value: 'Recuperación'}
+  {value: 'Definitiva'}
 ]);
 
 const snackbar = ref(false);
@@ -308,6 +322,123 @@ function handleSubmit(e) {
   }
   
   valid.value = true;
+}
+
+async function handleCalculation() {
+  // Para cada Estudiante (e)
+    // Filtar todas las Notas de ese Estudiante (notasEstudiante)
+    // Por cada Materia (m)
+      // Filtrar todas las Actividades de esa Materia (actividadesMateria)
+      // Filtrar todas las Notas con esos IDs de Actividades (notasMateria)
+      // Por cada Nota de notasMateria (n)
+        // 1. n.calificacion * (n.idActividad.porcentaje/100)
+        // 2. Sumar resultado a variable (finalMateria)
+      // Crear una Nota con: idActividad null, calificacion (finalMateria), observación "Nombre Materia", tipo "Final"
+      
+  estudiantes.value.forEach(e => {
+    if (e.idRol === 5) {
+      const notasEstudiante = items.value.filter(nota => nota.idEstudiante === e.idUsuario);
+      
+      materias.value.forEach(async m => {
+        const actividadesMateria = actividades.value.filter(actividad => actividad.idMateria === m.idMateria);
+        const idsActividadesMateria = actividadesMateria.map(a => a.idActividad);
+        
+        const notasMateriaEstudiante = notasEstudiante.filter(ne => {
+          return idsActividadesMateria.includes(ne.idActividad);
+        });
+        
+        const finalMateria = ref(0);
+        
+        notasMateriaEstudiante.forEach(n => {
+          const actividad = actividadesMateria.find(a => a.idActividad === n.idActividad);
+          finalMateria.value += (n.calificacion * (actividad.porcentaje/100));
+        });
+        
+        finalMateria.value = Math.round(finalMateria.value * 10) / 10;
+        
+        // console.log(`Estudiante: ${e.nombres}, Nota Final Materia ${m.nombre}: ${finalMateria.value}`);
+        
+        const notaFinalData = {
+          idNota: null,
+          idActividad: null,
+          idEstudiante: e.idUsuario,
+          idPeriodo: 4,
+          calificacion: finalMateria.value,
+          observacion: `${m.nombre}`,
+          tipo: "Definitiva"
+        };
+        
+        await axios
+          .post(`${API_URL_NOTAS}/create`, notaFinalData)
+          .then((res) => {
+            // showSnackbar(`Estudiante: ${e.nombres}, Nota Final Materia ${m.nombre}: ${finalMateria.value}`);
+          })
+          .catch((error) => {
+            showSnackbar(error.response.data, "error");
+          });
+      });
+    }
+  });
+  
+  showSnackbar("Notas Definitivas calculadas con éxito.")
+    
+  fetchAll();
+}
+
+function generateBoletines() {
+  const definitivas = items.value.filter(n => n.tipo === 'Definitiva');
+  if (definitivas.length === 0) {
+    showSnackbar("No se han podido generar los boletines porque no hay notas definitivas", "error");
+    return;
+  }
+  
+  const grouped = definitivas.reduce((acc, nota) => {
+    if (!acc[nota.idEstudiante]) acc[nota.idEstudiante] = [];
+    acc[nota.idEstudiante].push(nota);
+    return acc;
+  }, {});
+  
+  Object.entries(grouped).forEach(([idEstudiante, notas]) => {
+    const estudiante = estudiantes.value.find(e => String(e.idUsuario) === String(idEstudiante));
+    console.log(estudiante);
+    const nombre = estudiante ? estudiante.nombres + " " + (estudiante.apellidos || "") : "Estudiante desconocido";
+    const doc = estudiante?.docIdentidad || "N/A";
+    
+    // Crear documento
+    const pdf = new jsPDF();
+    pdf.setFontSize(18);
+    pdf.text("Boletín Académico", 105, 20, {align: "center"});
+    
+    pdf.setFontSize(12);
+    pdf.text(`Nombre: ${nombre}`, 20, 35);
+    pdf.text(`Documento: ${doc}`, 20, 43);
+    pdf.text(`Periodo Académico: ${notas[0]?.nombrePeriodo || "N/A"}`, 20, 51);
+    
+    // Contruir tabla de materias
+    const tableData = notas.map(n => [
+      n.observacion, // Nombre de la materia
+      n.calificacion.toFixed(1),
+      n.calificacion >= 3.0 ? "Aprobada" : "Reprobada"
+    ]);
+    
+    autoTable(pdf, {
+      startY: 60,
+      head: [["Materia", "Calificación", "Estado"]],
+      body: tableData,
+      styles: { halign: "center" },
+      headStyles: { fillColor: [22, 160, 133] }
+    });
+    
+    // Pie de página
+    const date = new Date().toLocaleDateString();
+    pdf.setFontSize(10);
+    pdf.text(`Generado el ${date}`, 20, pdf.internal.pageSize.height - 10);
+
+    // Guardar PDF
+    pdf.save(`Boletin_${nombre.replace(/\s+/g, "_")}.pdf`);
+  });
+  
+  showSnackbar("Se han generado con éxito los boletines académicos.")
 }
 
 const fetchAll = async () => {

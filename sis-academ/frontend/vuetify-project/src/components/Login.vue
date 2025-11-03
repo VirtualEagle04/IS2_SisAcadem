@@ -3,12 +3,13 @@
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4">
         <v-card class="elevation-12">
-          <v-toolbar color="primary" dark flat>
+          <v-toolbar color="grey-darken-1">
             <v-toolbar-title align="center">
               <v-icon start>mdi-school</v-icon>
               Sistema de Gestión Académica
             </v-toolbar-title>
           </v-toolbar>
+          <v-img src="../assets/logo.jpg" class="mt-5 mb-5 ml-5 mr-5"></v-img>
           <v-card-text>
             <v-form @submit.prevent="handleLogin">
               <v-text-field
@@ -32,7 +33,7 @@
 
               <v-btn
                 class="mt-4"
-                color="primary"
+                color="blue"
                 type="submit"
                 block
                 :loading="loading"

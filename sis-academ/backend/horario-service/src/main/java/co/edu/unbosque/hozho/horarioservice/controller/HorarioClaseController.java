@@ -43,9 +43,6 @@ public class HorarioClaseController {
         int status = horarioClaseServ.updateById(id, horarioClase);
         if (status == 1) return new ResponseEntity<>("No existe un horario clase con ese ID", HttpStatus.NOT_FOUND);
         else if (status == 2) return new ResponseEntity<>("La hora de fin debe ser posterior a la hora de inicio", HttpStatus.NOT_ACCEPTABLE);
-        else if (status == 3) return new ResponseEntity<>("El grado ya tiene clase en ese horario", HttpStatus.NOT_ACCEPTABLE);
-        else if (status == 4) return new ResponseEntity<>("El salon ya está ocupado en ese horario", HttpStatus.NOT_ACCEPTABLE);
-        else if (status == 5) return new ResponseEntity<>("El docente ya tiene clase en ese horario", HttpStatus.NOT_ACCEPTABLE);
 
         return new ResponseEntity<>("Horario Clase actualizado exitosamente", HttpStatus.OK);
     }

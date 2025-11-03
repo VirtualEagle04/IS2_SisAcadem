@@ -9,6 +9,7 @@
     show-select
     :search="search"
     :show-select="!soloLectura"
+    multi-sort
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">

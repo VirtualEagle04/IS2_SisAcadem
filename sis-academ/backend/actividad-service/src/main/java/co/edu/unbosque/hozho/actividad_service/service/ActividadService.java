@@ -49,7 +49,6 @@ public class ActividadService implements CRUDOperations<Actividad> {
     public int updateById(Long id, Actividad data) {
         Optional<Actividad> found = actividadRepository.findById(id);
         if (found.isEmpty()) return 1; // No existe una actividad con ese ID
-        else if(actividadRepository.existsByNombre(data.getNombre())) return 2; // Ya existe una actividad con ese nombre
 
         Actividad actividad = found.get();
         actividad.setIdMateria(data.getIdMateria());

@@ -38,9 +38,6 @@ public class PeriodoAcademicoService implements CRUDOperations<PeriodoAcademico>
         Optional<PeriodoAcademico> found = periodoAcademicoRepo.findById(id);
 
         if (found.isEmpty()) return 1; // No existe un periodo academico con ese ID
-        else if (periodoAcademicoRepo.existsByNombre(data.getNombre())) return 2; // Ya existe un periodo academico con ese nombre
-        else if (periodoAcademicoRepo.existsByFechaInicio(data.getFechaInicio())) return 3; // Ya existe un periodo academico con esa fecha de inicio
-
 
         PeriodoAcademico pa = found.get();
         pa.setNombre(data.getNombre());

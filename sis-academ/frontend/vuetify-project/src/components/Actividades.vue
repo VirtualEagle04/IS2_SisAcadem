@@ -9,6 +9,7 @@
     show-select
     :search="search"
     :show-select="!soloLectura"
+    multi-sort
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
@@ -257,7 +258,7 @@ function handleSubmit(e) {
   if (e.target[0].value === "") valid.value = false;
   if (e.target[1].value === "") valid.value = false;
   if (e.target[2].value === "") valid.value = false;
-  if (e.target[4].value === "") valid.value = false;
+  if (e.target[4].value === 0) valid.value = false;
   
   if (valid.value) {
     save();

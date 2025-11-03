@@ -36,7 +36,6 @@ public class MateriaService implements CRUDOperations<Materia> {
     public int updateById(Long id, Materia data) {
         Optional<Materia> found = materiaRepository.findById(id);
         if (found.isEmpty()) return 1; // No existe una materia con ese ID
-        else if(materiaRepository.existsByNombre(data.getNombre())) return 2; // Ya existe una materia con ese nombre
 
         Materia materia = found.get();
         materia.setNombre(data.getNombre());

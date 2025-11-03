@@ -70,33 +70,6 @@ public class HorarioClaseService implements CRUDOperations<HorarioClase>{
         if (found.isEmpty()) return 1; // No existe un horario clase con ese ID
         else if (!data.getHoraFin().isAfter(data.getHoraInicio())) return 2; // La hora de fin debe ser posterior a la hora de inicio
 
-        List<HorarioClase> horariosGrado = horarioClaseRepo.findByIdGrado(data.getIdGrado());
-        for (HorarioClase h : horariosGrado) {
-            if (h.getDiaSemana().equals(data.getDiaSemana())) {
-                if (hayConflictoHorario(data.getHoraInicio(), data.getHoraFin(), h.getHoraInicio(), h.getHoraFin())) {
-                    return 3; // El grado ya tiene clase en ese horario
-                }
-            }
-        }
-
-        List<HorarioClase> horariosSalon = horarioClaseRepo.findBySalon(data.getSalon());
-        for (HorarioClase h : horariosSalon) {
-            if (h.getDiaSemana().equals(data.getDiaSemana())) {
-                if (hayConflictoHorario(data.getHoraInicio(), data.getHoraFin(), h.getHoraInicio(), h.getHoraFin())) {
-                    return 4; // El salon ya está ocupado en ese horario
-                }
-            }
-        }
-
-        List<HorarioClase> horariosMateria = horarioClaseRepo.findByIdMateria(data.getIdMateria());
-        for (HorarioClase h : horariosMateria) {
-            if (h.getDiaSemana().equals(data.getDiaSemana())) {
-                if (hayConflictoHorario(data.getHoraInicio(), data.getHoraFin(), h.getHoraInicio(), h.getHoraFin())) {
-                    return 5; // El docente ya tiene clase en ese horario
-                }
-            }
-        }
-
         HorarioClase hc = found.get();
         hc.setIdGrado(data.getIdGrado());
         hc.setIdMateria(data.getIdMateria());

@@ -38,7 +38,6 @@ public class UsuarioService implements CRUDOperations<Usuario>{
     public int updateById(Long id, Usuario data) {
         Optional<Usuario> found = usuarioRepo.findById(id);
         if (found.isEmpty()) return 1; // No existe un usuario con ese ID
-        else if (usuarioRepo.existsByUsuario(data.getUsuario())) return 2; // Ya existe un usuario con ese nombre de usuario
 
         Usuario u = found.get();
         u.setIdRol(data.getIdRol());

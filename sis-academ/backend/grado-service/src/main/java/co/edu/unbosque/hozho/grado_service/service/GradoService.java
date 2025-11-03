@@ -57,7 +57,6 @@ public class GradoService implements CRUDOperations<Grado> {
     public int updateById(Long id, Grado data) {
         Optional <Grado> found = gradoRepository.findById(id);
         if (found.isEmpty()) return 1; // No existe un grado con ese ID
-        else if (gradoRepository.existsByNombre(data.getNombre())) return 2; // Ya existe un grado con ese nombre
 
         Grado g = found.get();
         g.setNombre(data.getNombre());

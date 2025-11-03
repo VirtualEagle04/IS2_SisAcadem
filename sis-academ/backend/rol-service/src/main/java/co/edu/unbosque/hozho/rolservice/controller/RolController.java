@@ -40,7 +40,6 @@ public class RolController {
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody Rol rol){
         int status = rolServ.updateById(id, rol);
         if (status == 1) return new ResponseEntity<>("No existe un rol con ese ID", HttpStatus.NOT_FOUND);
-        else if (status == 2) return new ResponseEntity<>("Ya existe un rol con ese nombre", HttpStatus.NOT_ACCEPTABLE);
 
         return new ResponseEntity<>("Rol actualizado exitosamente", HttpStatus.OK);
     }

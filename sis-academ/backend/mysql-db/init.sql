@@ -57,7 +57,7 @@ USE usuario;
 CREATE TABLE IF NOT EXISTS usuario(
 	id_usuario BIGINT AUTO_INCREMENT PRIMARY KEY,
 	id_rol BIGINT NOT NULL,
-	usuario VARCHAR(255) NOT NULL UNIQUE,
+	usuario VARCHAR(255) NOT NULL,
 	clave VARCHAR(255) NOT NULL,
 	nombres VARCHAR(255) NOT NULL,
 	apellidos VARCHAR(255) NOT NULL,
@@ -362,12 +362,12 @@ USE nota;
 
 CREATE TABLE IF NOT EXISTS nota(
     id_nota BIGINT AUTO_INCREMENT PRIMARY KEY,
-    id_actividad BIGINT NOT NULL,
+    id_actividad BIGINT,
     id_estudiante BIGINT NOT NULL,
     id_periodo BIGINT NOT NULL,
     calificacion FLOAT NOT NULL,
     observacion TEXT,
-    tipo ENUM('Normal', 'Recuperación') NOT NULL,
+    tipo ENUM('Normal', 'Definitiva') NOT NULL,
     FOREIGN KEY (id_actividad) REFERENCES actividad.actividad(id_actividad),
     FOREIGN KEY (id_estudiante) REFERENCES usuario.usuario(id_usuario),
     FOREIGN KEY (id_periodo) REFERENCES horario.periodo_academico(id_periodo)
@@ -381,31 +381,26 @@ VALUES
 (3, 20, 4, 3.6, 'Debe mejorar en restas', 'Normal'),
 (4, 20, 4, 4.7, 'Participa activamente en clase', 'Normal'),
 (5, 20, 4, 4.3, 'Buen resultado en examen final', 'Normal'),
-
 (1, 21, 4, 4.2, 'Buen trabajo general', 'Normal'),
 (2, 21, 4, 3.9, 'Mejorar la concentración', 'Normal'),
 (3, 21, 4, 3.5, 'Debe practicar restas', 'Normal'),
 (4, 21, 4, 4.4, 'Participativo y responsable', 'Normal'),
 (5, 21, 4, 4.0, 'Cumple con los objetivos', 'Normal'),
-
 (1, 22, 4, 4.8, 'Excelente desempeño', 'Normal'),
 (2, 22, 4, 4.6, 'Excelente comprensión', 'Normal'),
 (3, 22, 4, 4.5, 'Buen trabajo en restas', 'Normal'),
 (4, 22, 4, 4.9, 'Muy participativo', 'Normal'),
 (5, 22, 4, 4.7, 'Excelente examen', 'Normal'),
-
 (1, 23, 4, 4.1, 'Buen avance', 'Normal'),
 (2, 23, 4, 3.8, 'Debe mejorar la atención', 'Normal'),
 (3, 23, 4, 3.7, 'Cumple con lo básico', 'Normal'),
 (4, 23, 4, 4.2, 'Actitud positiva en clase', 'Normal'),
 (5, 23, 4, 4.0, 'Aprobado con buen esfuerzo', 'Normal'),
-
 (1, 24, 4, 4.4, 'Buen manejo de números', 'Normal'),
 (2, 24, 4, 3.9, 'A veces se distrae', 'Normal'),
 (3, 24, 4, 4.1, 'Buen progreso', 'Normal'),
 (4, 24, 4, 4.6, 'Participa con entusiasmo', 'Normal'),
 (5, 24, 4, 4.3, 'Superó las expectativas', 'Normal'),
-
 (1, 25, 4, 4.0, 'Buen desempeño general', 'Normal'),
 (2, 25, 4, 3.7, 'Debe reforzar sumas', 'Normal'),
 (3, 25, 4, 4.1, 'Satisface los objetivos', 'Normal'),
@@ -417,31 +412,26 @@ VALUES
 (8, 20, 4, 4.4, 'Escritura clara y coherente', 'Normal'),
 (9, 20, 4, 4.2, 'Participa constantemente', 'Normal'),
 (10, 20, 4, 4.1, 'Buen desempeño final', 'Normal'),
-
 (6, 21, 4, 3.8, 'Lee con buena entonación', 'Normal'),
 (7, 21, 4, 3.7, 'Errores leves en dictado', 'Normal'),
 (8, 21, 4, 4.0, 'Mejora continua', 'Normal'),
 (9, 21, 4, 4.2, 'Participativo', 'Normal'),
 (10, 21, 4, 3.9, 'Cumple con los objetivos', 'Normal'),
-
 (6, 22, 4, 4.7, 'Excelente lectura y comprensión', 'Normal'),
 (7, 22, 4, 4.5, 'Muy buena ortografía', 'Normal'),
 (8, 22, 4, 4.6, 'Excelente redacción', 'Normal'),
 (9, 22, 4, 4.8, 'Participación destacada', 'Normal'),
 (10, 22, 4, 4.6, 'Excelente cierre de período', 'Normal'),
-
 (6, 23, 4, 4.0, 'Buena lectura', 'Normal'),
 (7, 23, 4, 4.1, 'Dictado correcto', 'Normal'),
 (8, 23, 4, 4.0, 'Cumple con lo esperado', 'Normal'),
 (9, 23, 4, 4.3, 'Participación regular', 'Normal'),
 (10, 23, 4, 4.0, 'Buen resultado final', 'Normal'),
-
 (6, 24, 4, 4.2, 'Buena lectura', 'Normal'),
 (7, 24, 4, 4.0, 'Dictado correcto', 'Normal'),
 (8, 24, 4, 4.1, 'Cumple con lo esperado', 'Normal'),
 (9, 24, 4, 4.4, 'Participa activamente', 'Normal'),
 (10, 24, 4, 4.2, 'Buen resultado final', 'Normal'),
-
 (6, 25, 4, 3.9, 'Lectura comprensible', 'Normal'),
 (7, 25, 4, 3.8, 'Debe mejorar ortografía', 'Normal'),
 (8, 25, 4, 4.0, 'Progreso visible', 'Normal'),
@@ -452,27 +442,22 @@ VALUES
 (12, 20, 4, 4.0, 'Buen resultado en quiz', 'Normal'),
 (13, 20, 4, 4.2, 'Cumple con las tareas', 'Normal'),
 (14, 20, 4, 4.3, 'Buen examen final', 'Normal'),
-
 (11, 21, 4, 4.1, 'Proyecto completo y ordenado', 'Normal'),
 (12, 21, 4, 4.0, 'Buen desempeño', 'Normal'),
 (13, 21, 4, 4.1, 'Participativo', 'Normal'),
 (14, 21, 4, 4.0, 'Buen cierre', 'Normal'),
-
 (11, 22, 4, 4.8, 'Excelente trabajo', 'Normal'),
 (12, 22, 4, 4.7, 'Gran conocimiento del tema', 'Normal'),
 (13, 22, 4, 4.8, 'Excelente participación', 'Normal'),
 (14, 22, 4, 4.9, 'Examen sobresaliente', 'Normal'),
-
 (11, 23, 4, 4.0, 'Buen trabajo', 'Normal'),
 (12, 23, 4, 3.8, 'Debe repasar', 'Normal'),
 (13, 23, 4, 4.1, 'Cumple con tareas', 'Normal'),
 (14, 23, 4, 4.0, 'Buen examen', 'Normal'),
-
 (11, 24, 4, 4.3, 'Buen proyecto', 'Normal'),
 (12, 24, 4, 4.0, 'Buen quiz', 'Normal'),
 (13, 24, 4, 4.4, 'Participativo', 'Normal'),
 (14, 24, 4, 4.2, 'Examen correcto', 'Normal'),
-
 (11, 25, 4, 3.9, 'Cumple con el proyecto', 'Normal'),
 (12, 25, 4, 3.7, 'Debe reforzar conceptos', 'Normal'),
 (13, 25, 4, 4.0, 'Participa regularmente', 'Normal'),
@@ -483,31 +468,26 @@ VALUES
 (17, 20, 4, 4.1, 'Reconoce su comunidad', 'Normal'),
 (18, 20, 4, 4.2, 'Participativo', 'Normal'),
 (19, 20, 4, 4.0, 'Buen examen final', 'Normal'),
-
 (15, 21, 4, 4.0, 'Cumple con el proyecto', 'Normal'),
 (16, 21, 4, 3.8, 'Debe mejorar presentación', 'Normal'),
 (17, 21, 4, 4.0, 'Buen conocimiento', 'Normal'),
 (18, 21, 4, 4.2, 'Buena actitud', 'Normal'),
 (19, 21, 4, 3.9, 'Resultado adecuado', 'Normal'),
-
 (15, 22, 4, 4.7, 'Excelente proyecto', 'Normal'),
 (16, 22, 4, 4.6, 'Muy buena presentación', 'Normal'),
 (17, 22, 4, 4.8, 'Gran conocimiento del entorno', 'Normal'),
 (18, 22, 4, 4.9, 'Excelente participación', 'Normal'),
 (19, 22, 4, 4.7, 'Examen destacado', 'Normal'),
-
 (15, 23, 4, 4.0, 'Buen trabajo', 'Normal'),
 (16, 23, 4, 3.9, 'Debe reforzar', 'Normal'),
 (17, 23, 4, 4.1, 'Cumple con el objetivo', 'Normal'),
 (18, 23, 4, 4.2, 'Buena actitud', 'Normal'),
 (19, 23, 4, 4.0, 'Examen correcto', 'Normal'),
-
 (15, 24, 4, 4.2, 'Buen trabajo', 'Normal'),
 (16, 24, 4, 4.0, 'Cumple', 'Normal'),
 (17, 24, 4, 4.3, 'Participativo', 'Normal'),
 (18, 24, 4, 4.4, 'Actitud positiva', 'Normal'),
 (19, 24, 4, 4.1, 'Buen resultado', 'Normal'),
-
 (15, 25, 4, 3.9, 'Cumple con lo básico', 'Normal'),
 (16, 25, 4, 3.8, 'Debe mejorar redacción', 'Normal'),
 (17, 25, 4, 4.0, 'Participa regularmente', 'Normal'),
@@ -518,27 +498,22 @@ VALUES
 (21, 20, 4, 4.4, 'Excelentes manualidades', 'Normal'),
 (22, 20, 4, 4.6, 'Proyecto artístico sobresaliente', 'Normal'),
 (23, 20, 4, 4.3, 'Participación activa', 'Normal'),
-
 (20, 21, 4, 4.2, 'Buen trabajo', 'Normal'),
 (21, 21, 4, 4.0, 'Creatividad adecuada', 'Normal'),
 (22, 21, 4, 4.1, 'Buen esfuerzo', 'Normal'),
 (23, 21, 4, 4.2, 'Participativo', 'Normal'),
-
 (20, 22, 4, 4.9, 'Obra destacada', 'Normal'),
 (21, 22, 4, 4.7, 'Excelente técnica', 'Normal'),
 (22, 22, 4, 4.8, 'Muy creativo', 'Normal'),
 (23, 22, 4, 4.9, 'Excelente disposición', 'Normal'),
-
 (20, 23, 4, 4.1, 'Buen trabajo', 'Normal'),
 (21, 23, 4, 4.0, 'Cumple con lo esperado', 'Normal'),
 (22, 23, 4, 4.2, 'Buen proyecto', 'Normal'),
 (23, 23, 4, 4.1, 'Participación adecuada', 'Normal'),
-
 (20, 24, 4, 4.4, 'Buen dibujo', 'Normal'),
 (21, 24, 4, 4.3, 'Manualidad limpia', 'Normal'),
 (22, 24, 4, 4.5, 'Proyecto bien elaborado', 'Normal'),
 (23, 24, 4, 4.2, 'Participa con entusiasmo', 'Normal'),
-
 (20, 25, 4, 4.0, 'Dibujo correcto', 'Normal'),
 (21, 25, 4, 3.9, 'Debe mejorar detalles', 'Normal'),
 (22, 25, 4, 4.1, 'Buen trabajo', 'Normal'),
@@ -548,27 +523,22 @@ VALUES
 (25, 20, 4, 4.2, 'Actitud excelente', 'Normal'),
 (26, 20, 4, 4.3, 'Trabajo en equipo sobresaliente', 'Normal'),
 (27, 20, 4, 4.5, 'Muy buena disposición', 'Normal'),
-
 (24, 21, 4, 4.1, 'Buen rendimiento', 'Normal'),
 (25, 21, 4, 4.0, 'Participativo', 'Normal'),
 (26, 21, 4, 4.2, 'Colabora con el grupo', 'Normal'),
 (27, 21, 4, 4.3, 'Actitud positiva', 'Normal'),
-
 (24, 22, 4, 4.8, 'Excelente desempeño físico', 'Normal'),
 (25, 22, 4, 4.6, 'Destacado en juegos', 'Normal'),
 (26, 22, 4, 4.7, 'Excelente compañerismo', 'Normal'),
 (27, 22, 4, 4.8, 'Gran actitud', 'Normal'),
-
 (24, 23, 4, 4.0, 'Buen trabajo', 'Normal'),
 (25, 23, 4, 3.9, 'Debe mejorar resistencia', 'Normal'),
 (26, 23, 4, 4.0, 'Cumple con lo esperado', 'Normal'),
 (27, 23, 4, 4.1, 'Actitud responsable', 'Normal'),
-
 (24, 24, 4, 4.3, 'Buena coordinación', 'Normal'),
 (25, 24, 4, 4.1, 'Participativo', 'Normal'),
 (26, 24, 4, 4.2, 'Buen trabajo grupal', 'Normal'),
 (27, 24, 4, 4.4, 'Excelente esfuerzo', 'Normal'),
-
 (24, 25, 4, 4.0, 'Buen rendimiento', 'Normal'),
 (25, 25, 4, 3.8, 'Debe mejorar velocidad', 'Normal'),
 (26, 25, 4, 4.1, 'Cumple con el objetivo', 'Normal'),
@@ -579,31 +549,26 @@ VALUES
 (30, 20, 4, 4.0, 'Entiende bien las instrucciones', 'Normal'),
 (31, 20, 4, 4.2, 'Participa en clase', 'Normal'),
 (32, 20, 4, 4.3, 'Buen examen final', 'Normal'),
-
 (28, 21, 4, 4.1, 'Buen vocabulario', 'Normal'),
 (29, 21, 4, 4.0, 'Pronunciación aceptable', 'Normal'),
 (30, 21, 4, 3.8, 'Debe mejorar listening', 'Normal'),
 (31, 21, 4, 4.2, 'Participativo', 'Normal'),
 (32, 21, 4, 4.0, 'Aprobado', 'Normal'),
-
 (28, 22, 4, 4.9, 'Excelente dominio del vocabulario', 'Normal'),
 (29, 22, 4, 4.7, 'Excelente speaking', 'Normal'),
 (30, 22, 4, 4.8, 'Gran comprensión auditiva', 'Normal'),
 (31, 22, 4, 4.9, 'Excelente participación', 'Normal'),
 (32, 22, 4, 4.7, 'Examen sobresaliente', 'Normal'),
-
 (28, 23, 4, 4.2, 'Buen vocabulario', 'Normal'),
 (29, 23, 4, 4.1, 'Buena pronunciación', 'Normal'),
 (30, 23, 4, 4.0, 'Cumple con listening', 'Normal'),
 (31, 23, 4, 4.3, 'Actitud participativa', 'Normal'),
 (32, 23, 4, 4.1, 'Buen cierre de período', 'Normal'),
-
 (28, 24, 4, 4.3, 'Buen vocabulario', 'Normal'),
 (29, 24, 4, 4.2, 'Pronunciación clara', 'Normal'),
 (30, 24, 4, 4.1, 'Comprensión adecuada', 'Normal'),
 (31, 24, 4, 4.4, 'Participación constante', 'Normal'),
 (32, 24, 4, 4.3, 'Buen examen final', 'Normal'),
-
 (28, 25, 4, 4.0, 'Buen vocabulario', 'Normal'),
 (29, 25, 4, 3.9, 'Debe mejorar pronunciación', 'Normal'),
 (30, 25, 4, 3.8, 'Comprende lo básico', 'Normal'),

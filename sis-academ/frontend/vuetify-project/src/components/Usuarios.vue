@@ -10,6 +10,7 @@
     :search="search"
     :items-per-page="-1"
     :show-select="!soloLectura"
+    multi-sort
   >
     <template v-slot:top>
       <v-toolbar flat class="rounded">
