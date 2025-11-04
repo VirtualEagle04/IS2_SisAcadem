@@ -96,8 +96,8 @@
         <v-select
           v-model="record.idEstudiante"
           label="Estudiante"
-          :items="estudiantes"
-          item-title="docIdentidad"
+          :items="estudiantesSelect"
+          item-title="nombreEstudiante"
           item-value="idUsuario"
         ></v-select>
         <v-select
@@ -165,6 +165,8 @@ const soloLectura = computed(() => {
   if (!userData.value) return false;
   return userData.value.permisos?.soloLectura || false;
 });
+
+const estudiantesSelect = ref([]);
 
 const API_URL_MATERIAS = "http://localhost:8080/api/materias";
 const materias = ref([]);
@@ -463,8 +465,16 @@ const fetchAll = async () => {
       return {
         ...item,
         nombreActividad: actividad ? actividad.nombre : '...',
-        docEstudiante: estudiante ? estudiante.docIdentidad : '...',
+        docEstudiante: estudiante ? estudiante.docIdentidad + " - " + estudiante.nombres + " " + estudiante.apellidos : '...',
         nombrePeriodo: periodo ? periodo.nombre : '...'
+      }
+    });
+    
+    estudiantesSelect.value = estudiantes.value.filter(e => e.idRol === 5);
+    estudiantesSelect.value = estudiantesSelect.value.map(item => {
+      return {
+        ...item,
+        nombreEstudiante: item.docIdentidad + " - " + item.nombres + " " + item.apellidos
       }
     });
     

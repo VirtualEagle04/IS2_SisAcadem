@@ -1,4 +1,4 @@
-FROM openjdk:25-jdk-slim AS build
+FROM maven:3.9.11-eclipse-temurin-25 AS build
 
 # ~/app
 WORKDIR /app
@@ -9,12 +9,10 @@ COPY pom.xml .
 # ~/app/src/
 COPY src ./src
 
-RUN apt-get update && apt-get install -y maven
-
 RUN mvn clean package -DskipTests
 
 
-FROM openjdk:25-jdk-slim
+FROM eclipse-temurin:25-jre
 
 WORKDIR /app
 

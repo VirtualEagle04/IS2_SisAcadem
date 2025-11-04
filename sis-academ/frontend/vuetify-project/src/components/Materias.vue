@@ -70,8 +70,8 @@
         <v-select
           v-model="record.idDocente"
           label="Docente"
-          :items="usuarios.filter(u => u.idRol === 3)"
-          item-title="docIdentidad"
+          :items="docentes"
+          item-title="nombreDocente"
           item-value="idUsuario"
         ></v-select>
         <v-text-field
@@ -121,6 +121,8 @@ const soloLectura = computed(() => {
   if (!userData.value) return false;
   return userData.value.permisos?.soloLectura || false;
 });
+
+const docentes = ref([]);
 
 const API_URL_USUARIOS = "http://localhost:8080/api/usuarios/usuarios";
 const usuarios = ref([]);
@@ -269,7 +271,15 @@ const fetchAll = async () => {
       const usuario = usuarios.value.find(u => u.idUsuario === item.idDocente);
       return {
         ...item,
-        docDocente: usuario ? usuario.docIdentidad : '...'
+        docDocente: usuario ? usuario.docIdentidad + " - " + usuario.nombres + " " + usuario.apellidos : '...'
+      }
+    });
+    
+    docentes.value = usuarios.value.filter(u => u.idRol === 3);
+    docentes.value = docentes.value.map(item => {
+      return {
+        ...item,
+        nombreDocente: item.docIdentidad + " - " + item.nombres + " " + item.apellidos
       }
     });
     
