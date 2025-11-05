@@ -117,7 +117,7 @@
           label="Edad"
           :rules="[rules.required]"
           :min="1"
-          :max="25"
+          :max="80"
         ></v-number-input>
         <v-radio-group
           v-model="record.sexo"
@@ -164,8 +164,8 @@
           v-if="record.idRol == 5"
           v-model="record.idAcudiente"
           label="Acudiente"
-          :items="items"
-          item-title="docIdentidad"
+          :items="acudientes"
+          item-title="nombreAcudiente"
           item-value="idUsuario"
         ></v-select>
         
@@ -206,6 +206,8 @@ const soloLectura = computed(() => {
   if (!userData.value) return false;
   return userData.value.permisos?.soloLectura || false;
 });
+
+const acudientes = ref([]);
 
 const API_URL_ROLES = "http://localhost:8080/api/roles";
 const roles = ref([]);
@@ -375,6 +377,7 @@ async function save() {
     try {
       const salt = await bcrypt.genSalt(10);
       usuarioData.clave = await bcrypt.hash(usuarioData.clave, salt);
+      console.log(usuarioData.clave);
     } catch (error) {
       showSnackbar("Error al hashear la contraseña", "error");
       return;
@@ -438,7 +441,7 @@ async function save() {
     } 
   } else {
     await axios
-      .post(`${API_URL_USUARIOS}/create`, record.value)
+      .post(`${API_URL_USUARIOS}/create`, usuarioData)
       .then((res) => {
         showSnackbar(res.data);
         dialog.value = false;
@@ -520,7 +523,15 @@ const fetchAll = async () => {
         idCurso: curso?.idCurso ?? '-',
         nombreCurso: curso?.nombre ?? '-',
         idAcudiente: acudiente?.idUsuario ?? '-',
-        docAcudiente: acudiente?.docIdentidad ?? '-'
+        docAcudiente: acudiente? acudiente.docIdentidad + " - " + acudiente.nombres + " " + acudiente.apellidos : '-'
+      }
+    });
+    
+    acudientes.value = usuariosRes.data.filter(item => item.idRol === 4);
+    acudientes.value = acudientes.value.map(item => {
+      return {
+        ...item,
+        nombreAcudiente: item.docIdentidad + " - " + item.nombres + " " + item.apellidos
       }
     });
     

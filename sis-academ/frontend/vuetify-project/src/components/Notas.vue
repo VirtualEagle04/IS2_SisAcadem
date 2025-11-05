@@ -25,10 +25,10 @@
           hide-details
           single-line
         ></v-text-field>
-        <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-file-pdf-box" color="orange" @click="generateBoletines">
+        <v-btn v-if="!soloLectura && !isDocente" class="me-2" prepend-icon="mdi-file-pdf-box" color="orange" @click="generateBoletines">
           Generar Boletines
         </v-btn>
-        <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-calculator" color="gray" @click="handleCalculation">
+        <v-btn v-if="!soloLectura && !isDocente" class="me-2" prepend-icon="mdi-calculator" color="gray" @click="handleCalculation">
           Cálcular Notas Finales
         </v-btn>
         <v-btn v-if="!soloLectura" class="me-2" prepend-icon="mdi-plus" color="green" @click="add">
@@ -166,6 +166,7 @@ const soloLectura = computed(() => {
   return userData.value.permisos?.soloLectura || false;
 });
 
+const isDocente = ref(false);
 const estudiantesSelect = ref([]);
 
 const API_URL_MATERIAS = "http://localhost:8080/api/materias";
@@ -479,6 +480,7 @@ const fetchAll = async () => {
     });
     
     if (userData.value.idRol === 3) { // Docente
+      isDocente.value = true;
       const materia = materias.value.find(item => item.idDocente === userData.value.idUsuario);
       const actividadesFiltradas = actividades.value.filter(item => item.idMateria === materia.idMateria);
       items.value = items.value.filter(item => 

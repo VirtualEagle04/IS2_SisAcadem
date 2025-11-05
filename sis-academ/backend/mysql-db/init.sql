@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS rol(
 INSERT INTO rol (nombre, solo_lectura, rol, usuario, grado, curso, materia, actividad, horario, nota, asistencia, matricula)
 VALUES
 ('Administrador', FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
-('Coordinador', FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
+('Coordinador', FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
 ('Docente', FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE),
 ('Acudiente', TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE),
 ('Estudiante', TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE);
@@ -103,7 +103,9 @@ VALUES
 (5, 'lusanchez', '$2b$10$Xjeps/iC/v0YcztMNUlrvedB5Z2r.L4uGU3osELedtNYCsKXu8Pa6', 'Luna', 'Sánchez', '2018-07-10', 6, 'F', 1003456789, 'Cali', '3403456789', 'lusanchez@ejemplo.com'),
 (5, 'mdiaz', '$2b$10$iXdo3lynxM1sWNFB24CYeusnDb.p6RQ5TQYHA0wwm/J0UllPPf2Ae', 'Mateo', 'Díaz', '2018-09-25', 6, 'M', 1004567890, 'Cartagena', '3404567890', 'mdiaz@ejemplo.com'),
 (5, 'vrodriguez', '$2b$10$uvXldQxxQMQuSa/bo/qoC.Jc2ElriRirbpZyhYkRJhbOrNK.V3/di', 'Victoria', 'Rodríguez', '2018-02-10', 6, 'F', 1021234567, 'Cali', '3421234567', 'vrodriguez@ejemplo.com'),
-(5, 'eramirez', '$2b$10$L8pjAhl/eMo1FhWrLcVPFuDDnw9eiT3IDsGZcANg1C3EkEfqH4oi2', 'Emilio', 'Ramírez', '2018-04-15', 6, 'M', 1022345678, 'Cartagena', '3422345678', 'eramirez@ejemplo.com');
+(5, 'eramirez', '$2b$10$L8pjAhl/eMo1FhWrLcVPFuDDnw9eiT3IDsGZcANg1C3EkEfqH4oi2', 'Emilio', 'Ramírez', '2018-04-15', 6, 'M', 1022345678, 'Cartagena', '3422345678', 'eramirez@ejemplo.com'),
+-- COORDINADOR
+(2, 'etorres', '$2b$10$lQ9YaGyXIxung4Rk6LPGSer7z.8BcDHL/c21knWQstHB1H3kBMOLK', 'Elkin', 'Torres', '1982-01-05', 41, 'M', 6677889910, 'Pereira', '3267890123', 'etorres@ejemplo.com');
 
 
 

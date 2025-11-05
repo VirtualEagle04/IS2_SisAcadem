@@ -42,6 +42,7 @@ Repositorio para el Sistema de Gestión Académica para el colegio 'Camino al Sa
    - `http://localhost:3000`
    - Ingresar utilizando cualquiera de los siguientes credenciales para cada rol:
       -  ADMINISTRADOR (Usuario: admin, Contraseña: admin)
+      -  COORDINADOR (Usuario: etorres, Contraseña: coord01)
       -  DOCENTE 1 (Usuario: adoe, Contraseña: teachpass123)
       -  DOCENTE 2 (Usuario: bsmith, Contraseña: teachpass456)
       -  ACUDIENTE 1 (Usuario: jgarcia, Contraseña: parent101)
